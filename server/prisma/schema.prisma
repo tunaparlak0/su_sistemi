@@ -1,0 +1,48 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Subscription {
+  id          Int       @id // Artık autoincrement değil, biz atayacağız
+  idNo        String?
+  taxNo       String?
+  address     String
+  status      String    @default("PENDING")
+  startDate   DateTime  @default(now())
+  
+  // Aboneliğin sahiplerini User tablosundaki relation üzerinden göreceğiz
+  owners      User[]    
+  invoices    Invoice[]
+}
+
+model User {
+  id             String        @id
+  role           String        @default("USER")
+  name           String
+  surname        String
+  telephone      String?       @unique
+  token          String?       @unique
+  mail           String        @unique
+  
+  // User bir aboneliğe bağlı olabilir, ama zorunlu değil.
+  subscription   Subscription? @relation(fields: [subscriptionId], references: [id])
+  subscriptionId Int?
+}
+
+model Invoice {
+  id             String       @id
+  totalPrice     Decimal
+  usedWater      Decimal
+  unitPrice      Decimal
+  taxRate        Decimal
+  invoiceDate    DateTime     @default(now())
+  status         String       @default("UNPAID")
+
+  subscription   Subscription @relation(fields: [subscriptionId], references: [id])
+  subscriptionId Int
+}
