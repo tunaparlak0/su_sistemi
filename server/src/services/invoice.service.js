@@ -31,8 +31,9 @@ const create = async (data) => {
 };
 
 const getBySubscription = async (subscriptionId) => {
-  return await prisma.invoice.findMany({ 
-    where: { subscriptionId: parseInt(subscriptionId) } 
+  return await prisma.invoice.findMany({
+    where: { subscriptionId: parseInt(subscriptionId) },
+    orderBy: { invoiceDate: 'desc' } // En yeni fatura en üstte gelir
   });
 };
 

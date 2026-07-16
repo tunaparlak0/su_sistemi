@@ -1,8 +1,11 @@
 const controller = require('../controllers/invoice.controller');
 
 async function invoiceRoutes(fastify, options) {
-  fastify.post('/', controller.store);       // Fatura oluştur
-  fastify.get('/:subscriptionId', controller.getBySub); // Aboneliğe ait faturaları getir
-}
+  // Fatura oluşturma: Sadece Admin
+  fastify.post('/', { preHandler: require('../middlewares/adminAuth') }, controller.store);
+  
+  // Kullanıcının kendi faturalarını görmesi: Herkes (veya güvenlik için kendi aboneliği olduğunu kontrol eden bir katman)
+  fastify.get('/:subscriptionId', controller.getBySub);
+} 
 
 module.exports = invoiceRoutes;

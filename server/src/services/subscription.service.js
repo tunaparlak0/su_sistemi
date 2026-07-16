@@ -1,34 +1,46 @@
 const prisma = require('../config/prisma');
-const { generateSevenDigitId } = require('../utils/idGenerator');
+const { generateUserId, generateSevenDigitId } = require('../utils/idGenerator');
+
 const getAll = async () => await prisma.subscription.findMany({ include: { invoices: true } });
 
-const create = async (data) => {
-  const { userId, ...subData } = data;
-  const newSubId = generateSevenDigitId();
+const createSubscriptionRequest = async (data) => {
+  const { name, surname, mail, telephone, address, idNo } = data;
+  
+  // 1. ID'leri üret
+  const userId = generateUserId(name, surname);
+  const subId = generateSevenDigitId(); // BURASI DÜZELTİLDİ
 
-  // İşlem: Hem abonelik oluştur hem de User'ı bu aboneliğe bağla
+  // 2. İşlem
   return await prisma.$transaction([
-    prisma.subscription.create({
+    prisma.user.create({
       data: {
-        id: newSubId,
-        ...subData
+        id: userId,
+        name,
+        surname,
+        mail,
+        telephone,
+        subscription: {
+          create: {
+            id: subId,
+            idNo,
+            address,
+            status: "PENDING"
+          }
+        }
       }
-    }),
-    prisma.user.update({
-      where: { id: userId },
-      data: { subscriptionId: newSubId }
     })
   ]);
 };
+
 const getById = async (id) => {
   return await prisma.subscription.findUnique({
     where: { id: parseInt(id) },
     include: {
-      owner: { // owner ilişkisi üzerinden User tablosuna gidiyoruz
-        select: { name: true, surname: true } // Sadece bunları alıyoruz
+      owners: { 
+        select: { name: true, surname: true }
       }
     }
   });
 };
 
-module.exports = { getAll, create, getById };
+module.exports = { getAll, createSubscriptionRequest, getById };
