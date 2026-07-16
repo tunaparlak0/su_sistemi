@@ -8,9 +8,9 @@ const createSubscriptionRequest = async (data) => {
   
   // 1. ID'leri üret
   const userId = generateUserId(name, surname);
-  const subId = generateSevenDigitId(); // BURASI DÜZELTİLDİ
+  const subId = generateSevenDigitId(); 
 
-  // 2. İşlem
+  // 2. İşlemleri bir transaction içinde yap
   return await prisma.$transaction([
     prisma.user.create({
       data: {
