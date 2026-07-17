@@ -10,7 +10,14 @@ const store = async (req, reply) => {
 };
 
 const getBySub = async (req, reply) => {
-  return await service.getBySubscription(req.params.subscriptionId);
+  const { subscriptionId } = req.params;
+  
+  // Eğer id null veya "null" ise boş dizi dön
+  if (!subscriptionId || subscriptionId === 'null') {
+    return [];
+  }
+  
+  return await service.getBySubscription(subscriptionId);
 };
 
 module.exports = { store, getBySub };
