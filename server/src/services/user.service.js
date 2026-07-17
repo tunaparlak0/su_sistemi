@@ -1,20 +1,47 @@
-    const prisma = require('../config/prisma');
-    const { generateUserId } = require('../utils/idGenerator');
+const prisma = require('../config/prisma');
+const { generateUserId, generateAdminToken } = require('../utils/idGenerator');
 
-    const createUser = async (data) => {
+// Standart Kullanıcı Oluşturma
+const createUser = async (data) => {
     const { name, surname, ...rest } = data;
     const newId = generateUserId(name, surname);
 
     return await prisma.user.create({
         data: {
-        ...rest,
-        id: newId,
-        name: name,      // Buraya ekledik
-        surname: surname // Buraya ekledik
+            ...rest,
+            id: newId,
+            name: name,
+            surname: surname,
+            role: 'USER' 
         }
     });
-    };
+};
 
-    const getAllUsers = async () => await prisma.user.findMany();
+// Admin Oluşturma 
+const createAdmin = async (data) => {
+    try {
+        const { name, surname, mail, telephone, ...rest } = data;
+        const newId = generateUserId(name, surname);
+        const generatedToken = generateAdminToken();
 
-    module.exports = { createUser, getAllUsers };
+        return await prisma.user.create({
+            data: {
+                ...rest,
+                id: newId,
+                name,
+                surname,
+                mail,
+                telephone,
+                role: 'ADMIN',
+                token: generatedToken
+            }
+        });
+    } catch (error) {
+        console.error("Prisma Hatası:", error); // Terminalde hatanın detayını göreceksin
+        throw error;
+    }
+};
+
+const getAllUsers = async () => await prisma.user.findMany();
+
+module.exports = { createUser, createAdmin, getAllUsers };

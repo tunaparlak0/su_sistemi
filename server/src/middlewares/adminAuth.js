@@ -1,3 +1,5 @@
+const prisma = require('../config/prisma');
+
 module.exports = async (request, reply) => {
   const token = request.headers['x-admin-token']; // Token'ı header'dan alacağız
   const userId = request.headers['x-admin-id'];

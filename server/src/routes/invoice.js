@@ -4,7 +4,7 @@ async function invoiceRoutes(fastify, options) {
   // Fatura oluşturma: Sadece Admin
   fastify.post('/', { preHandler: require('../middlewares/adminAuth') }, controller.store);
   
-  // Kullanıcının kendi faturalarını görmesi: Herkes (veya güvenlik için kendi aboneliği olduğunu kontrol eden bir katman)
+  // Kullanıcının kendi faturaları
   fastify.get('/:subscriptionId', controller.getBySub);
 } 
 
