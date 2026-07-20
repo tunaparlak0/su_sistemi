@@ -8,20 +8,21 @@ datasource db {
 }
 
 model Subscription {
-  id          Int       @id // Artık autoincrement değil, biz atayacağız
+  id          String       @id @default(uuid())
   idNo        String?
   taxNo       String?
   address     String
   status      String    @default("PENDING")
   startDate   DateTime  @default(now())
-  
+  dueDate     DateTime
   // Aboneliğin sahiplerini User tablosundaki relation üzerinden göreceğiz
   owners      User[]    
   invoices    Invoice[]
+  logs        SubscriptionLog[]
 }
 
 model User {
-  id             String        @id
+  id             String        @id @default(uuid())
   role           String        @default("USER")
   name           String
   surname        String
@@ -31,11 +32,12 @@ model User {
   
   // User bir aboneliğe bağlı olabilir, ama zorunlu değil.
   subscription   Subscription? @relation(fields: [subscriptionId], references: [id])
-  subscriptionId Int?
+  subscriptionId String?
+  worker         Worker?
 }
 
 model Invoice {
-  id             String       @id
+  id             String       @id @default(uuid())
   totalPrice     Decimal
   usedWater      Decimal
   unitPrice      Decimal
@@ -44,5 +46,26 @@ model Invoice {
   status         String       @default("UNPAID")
 
   subscription   Subscription @relation(fields: [subscriptionId], references: [id])
-  subscriptionId Int
+  subscriptionId String
+}
+model Worker {
+  id        String   @id @default(uuid())
+  role      String   @default("WORKER") // WORKER veya ADMIN
+  status    String   @default("ACTIVE")
+
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id])
+
+}
+
+model SubscriptionLog {
+  id          String   @id @default(uuid())
+  meterNo     String   
+  oldOwnerId  String?  // Eski abone ID
+  newOwnerId  String?  // Yeni abone ID
+  action      String   // "TRANSFER", "NEW_START", "CANCELLED"
+  changedAt   DateTime @default(now())
+  subscriptionId String
+  subscription   Subscription @relation(fields: [subscriptionId], references: [id])
+
 }

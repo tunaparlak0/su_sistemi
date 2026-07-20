@@ -1,5 +1,5 @@
 const crypto = require('crypto');
-const generateSevenDigitId = () => {// abonelik no oluşturucu
+/*const generateSevenDigitId = () => {// abonelik no oluşturucu
   return Math.floor(1000000 + Math.random() * 9000000);
 };
 const generateUserId = (name, surname) => {//kullanıcı id oluşturucu
@@ -15,9 +15,9 @@ const generateInvoiceId = (date) => {// fatura id oluşturucu
   
   const randomNumbers = Math.floor(10000 + Math.random() * 90000); 
   return `${day}${month}${year}-${randomNumbers}`; // 140826-12345
-};
+};*/
 const generateAdminToken = () => {
     return crypto.randomBytes(4).toString('hex'); // 8 karakterlik rastgele bir şifre
 };
-module.exports = { generateSevenDigitId, generateUserId, generateInvoiceId, generateAdminToken };
+module.exports = {/* generateSevenDigitId, generateUserId, generateInvoiceId,*/ generateAdminToken };
 

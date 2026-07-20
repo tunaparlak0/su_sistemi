@@ -1,5 +1,5 @@
 const prisma = require('../config/prisma');
-const { generateInvoiceId } = require('../utils/idGenerator');
+//const { generateInvoiceId } = require('../utils/idGenerator');
 
 const create = async (data) => {
   const { subscriptionId, ...invoiceData } = data;
