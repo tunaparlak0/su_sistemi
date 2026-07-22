@@ -8,32 +8,33 @@ datasource db {
 }
 
 model Subscription {
-  id          String       @id @default(uuid())
-  idNo        String?
-  taxNo       String?
-  address     String
-  status      String    @default("PENDING")
-  startDate   DateTime  @default(now())
-  dueDate     DateTime
-  // Aboneliğin sahiplerini User tablosundaki relation üzerinden göreceğiz
-  owners      User[]    
-  invoices    Invoice[]
-  logs        SubscriptionLog[]
+  id             String    @id // idGenerator ile kendin vereceksin (örn: sub_xxxx)
+  idNo           String?
+  taxNo          String?
+  status         String    @default("PENDING")
+  startDate      DateTime  @default(now())
+  dueDate        DateTime
+  // Hangi sayaçla ilişkili?
+  meterId        String
+  meter          Meter     @relation(fields: [meterId], references: [id])
+  owners         User[]    
+  invoices       Invoice[]
+  logs           SubscriptionLog[]
 }
 
 model User {
   id             String        @id @default(uuid())
-  role           String        @default("USER")
+  idNo           String        @unique
   name           String
   surname        String
-  telephone      String?       @unique
-  token          String?       @unique
-  mail           String        @unique
+  telephone      String?       
+  mail           String        
   
   // User bir aboneliğe bağlı olabilir, ama zorunlu değil.
   subscription   Subscription? @relation(fields: [subscriptionId], references: [id])
   subscriptionId String?
   worker         Worker?
+  logs           SubscriptionLog[]
 }
 
 model Invoice {
@@ -43,29 +44,36 @@ model Invoice {
   unitPrice      Decimal
   taxRate        Decimal
   invoiceDate    DateTime     @default(now())
-  status         String       @default("UNPAID")
-
+  isPaid         Boolean      @default(false) // Ödendi mi? (True / False)
+  dueDate        DateTime
   subscription   Subscription @relation(fields: [subscriptionId], references: [id])
   subscriptionId String
 }
 model Worker {
-  id        String   @id @default(uuid())
+  id        String   @unique
   role      String   @default("WORKER") // WORKER veya ADMIN
   status    String   @default("ACTIVE")
-
-  userId    String   @unique
+  token     String
   user      User     @relation(fields: [userId], references: [id])
-
+  userId    String   @unique
 }
 
 model SubscriptionLog {
-  id          String   @id @default(uuid())
-  meterNo     String   
-  oldOwnerId  String?  // Eski abone ID
-  newOwnerId  String?  // Yeni abone ID
-  action      String   // "TRANSFER", "NEW_START", "CANCELLED"
-  changedAt   DateTime @default(now())
-  subscriptionId String
-  subscription   Subscription @relation(fields: [subscriptionId], references: [id])
-
+  id             String       @id @default(uuid())
+  meterNo        String       
+  action         String       // "TRANSFER", "NEW_START", "CANCELLED"
+  changedAt      DateTime     @default(now())
+  userId         String?
+  user           User?        @relation(fields: [userId], references: [id])  
+  subscriptionId String?
+  subscription   Subscription? @relation(fields: [subscriptionId], references: [id])
+  meterId        String?
+  meter          Meter?        @relation(fields: [meterId], references: [id], onDelete: SetNull)
+}
+model Meter {
+  id             String            @id  // idGenerator ile autoincrement yapıcaz abone nosu gibi bir şey olucak
+  meterNo        String            @unique // SK-000001 gibi sayaç numarası
+  address        String
+  subscriptions  Subscription[]    
+  logs           SubscriptionLog[]
 }

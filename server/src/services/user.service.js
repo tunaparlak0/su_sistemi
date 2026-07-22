@@ -1,17 +1,11 @@
 const prisma = require('../config/prisma');
-const { generateUserId, generateAdminToken } = require('../utils/idGenerator');
+const { generateAdminToken } = require('../utils/idGenerator');
 
 // Standart Kullanıcı Oluşturma
 const createUser = async (data) => {
-    const { name, surname, ...rest } = data;
-    const newId = generateUserId(name, surname);
-
     return await prisma.user.create({
         data: {
-            ...rest,
-            id: newId,
-            name: name,
-            surname: surname,
+            ...data,
             role: 'USER' 
         }
     });
@@ -20,24 +14,17 @@ const createUser = async (data) => {
 // Admin Oluşturma 
 const createAdmin = async (data) => {
     try {
-        const { name, surname, mail, telephone, ...rest } = data;
-        const newId = generateUserId(name, surname);
         const generatedToken = generateAdminToken();
 
         return await prisma.user.create({
             data: {
-                ...rest,
-                id: newId,
-                name,
-                surname,
-                mail,
-                telephone,
+                ...data,
                 role: 'ADMIN',
                 token: generatedToken
             }
         });
     } catch (error) {
-        console.error("Prisma Hatası:", error); // Terminalde hatanın detayını göreceksin
+        console.error("Prisma Hatası:", error);
         throw error;
     }
 };

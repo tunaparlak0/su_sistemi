@@ -4,8 +4,9 @@ import { useNavigate } from 'react-router-dom';
 
 export default function Subscription() {
   const navigate = useNavigate();
+  // 'address' alanı state'ten kaldırıldı
   const [formData, setFormData] = useState({
-    name: '', surname: '', mail: '', telephone: '', idNo: '', address: ''
+    name: '', surname: '', mail: '', telephone: '', idNo: '', meterNo: ''
   });
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -13,8 +14,12 @@ export default function Subscription() {
     e.preventDefault();
     try {
       const response = await postSubscription(formData);
-      if (response?.error) setErrorMessage(response.error);
-      else { alert("Başvurunuz başarıyla alındı!"); navigate('/'); }
+      if (response?.error || response?.message) {
+        setErrorMessage(response.error || response.message);
+      } else { 
+        alert("Başvurunuz başarıyla alındı!"); 
+        navigate('/'); 
+      }
     } catch {
       setErrorMessage("Bağlantı hatası: Sunucuya ulaşılamıyor.");
     }
@@ -32,7 +37,6 @@ export default function Subscription() {
         )}
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          
           <div className="flex gap-4">
             <input placeholder="Ad" className="flex-1 p-3 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" onChange={(e) => setFormData({...formData, name: e.target.value})} required />
             <input placeholder="Soyad" className="flex-1 p-3 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" onChange={(e) => setFormData({...formData, surname: e.target.value})} required />
@@ -41,7 +45,10 @@ export default function Subscription() {
           <input type="email" placeholder="E-posta" className="w-full p-3 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" onChange={(e) => setFormData({...formData, mail: e.target.value})} required />
           <input placeholder="Telefon" className="w-full p-3 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" onChange={(e) => setFormData({...formData, telephone: e.target.value})} required />
           <input placeholder="TC Kimlik No" className="w-full p-3 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" onChange={(e) => setFormData({...formData, idNo: e.target.value})} required />
-          <textarea placeholder="Adres" rows="3" className="w-full p-3 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" onChange={(e) => setFormData({...formData, address: e.target.value})} required />
+          
+          <input placeholder="Sayaç Numarası (Örn: SK-000001)" className="w-full p-3 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" onChange={(e) => setFormData({...formData, meterNo: e.target.value})} required />
+          
+          {/* Adres textarea alanı buradan tamamen kaldırıldı */}
 
           <button type="submit" className="w-full mt-4 p-4 bg-blue-700 text-white rounded-lg font-bold hover:bg-blue-800 transition-all shadow-md">
             Başvuruyu Tamamla
