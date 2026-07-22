@@ -1,43 +1,42 @@
-// services/meter.service.js
 const prisma = require('../config/prisma');
-const { generateSubscriptionId, formatMeterNo } = require('../utils/idGenerator');
+const { formatMeterNo, generateSubscriptionId } = require('../utils/idGenerator');
 
 const createMeter = async (data) => {
   const { address } = data;
 
-  // 1. Veritabanındaki en son sayacı bulup meterNo'yu (SK-00000X) otomatik artıralım
-  const lastMeter = await prisma.meter.findFirst({
-    orderBy: { meterNo: 'desc' }
-  });
+  // 1. Sayaç numarasını güvenli şekilde hesapla
+  const meterCount = await prisma.meter.count();
+  const nextNumber = meterCount + 1;
+  const newMeterNo = formatMeterNo(nextNumber); // Örn: "000001"
 
-  let nextNumber = 1;
-  if (lastMeter && lastMeter.meterNo) {
-    const currentNum = parseInt(lastMeter.meterNo.split('-')[1]);
-    nextNumber = currentNum + 1;
-  }
+  // 2. Abonelik ID'sini güvenli şekilde hesapla
+  const subCount = await prisma.subscription.count();
+  const nextSubNumber = 1000001 + subCount;
+  const newSubId = generateSubscriptionId(nextSubNumber); // Örn: "1000001"
 
-  const newMeterNo = formatMeterNo(nextNumber); // Örn: SK-000001
-
-  const lastMeterById = await prisma.meter.findFirst({
-    orderBy: { id: 'desc' }
-  });
-
-  let nextIdNumber = 1000001; 
-  if (lastMeterById && lastMeterById.id) {
-   
-    const currentIdNum = parseInt(lastMeterById.id.split('-')[1]);
-    nextIdNumber = currentIdNum + 1;
-  }
-  const newId = generateSubscriptionId(nextIdNumber);
-  // 3. Veritabanına kaydet
-  return await prisma.meter.create({
+  // 3. Önce Meter'ı oluştur (içinde subscriptions bloğu YOK)
+  const newMeter = await prisma.meter.create({
     data: {
-      id: newId,        
-      meterNo: newMeterNo, 
-      address: address     
+      meterNo: newMeterNo,
+      address: address
     }
   });
+
+  // 4. Ardından aboneliği bu sayaç numarasına bağlı olarak oluştur
+  const newSubscription = await prisma.subscription.create({
+    data: {
+      id: newSubId,
+      status: "FREE",
+      meterId: newMeterNo
+    }
+  });
+
+  return {
+    ...newMeter,
+    subscriptions: [newSubscription]
+  };
 };
+
 const getAllMeters = async () => {
   return await prisma.meter.findMany({
     include: { subscriptions: true }

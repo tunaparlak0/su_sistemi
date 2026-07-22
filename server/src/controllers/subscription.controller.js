@@ -1,38 +1,38 @@
-// server/src/controllers/subscription.controller.js
-const service = require('../services/subscription.service');
+const subscriptionService = require('../services/subscription.service');
 
-const index = async (req, reply) => await service.getAll();
-
-const getPending = async (req, reply) => await service.findPending();
-
-const approve = async (req, reply) => {
-    const { id } = req.params;
-    return await service.updateStatus(id, 'APPROVED');
-};
-
-const store = async (req, reply) => {
+const applySubscription = async (req, reply) => {
   try {
-    const result = await service.createSubscriptionRequest(req.body); 
-    return reply.status(201).send(result);
+    const { name, surname, mail, telephone, idNo, subscriptionId } = req.body;
+
+    if (!name || !surname || !subscriptionId) {
+      return reply.code(400).send({ error: "Ad, soyad ve abonelik numarası zorunludur." });
+    }
+
+    const result = await subscriptionService.applySubscription({
+      name,
+      surname,
+      mail,
+      telephone,
+      idNo,
+      subscriptionId
+    });
+
+    return reply.code(201).send({
+      message: "Abonelik başvurusu başarıyla alındı.",
+      data: result
+    });
   } catch (error) {
-    // 1. Terminale hatayı yazdır (Sorunu anlamak için en önemli kısım)
-    console.error("DEBUG - Subscription Controller Hatası:", error);
-
-    // 2. Eğer servis katmanından özel bir hata mesajı gelirse (örneğin "Sayaç numarası zorunludur")
-    if (error.message) {
-      return reply.status(400).send({ error: error.message });
-    }
-
-    // 3. Prisma'nın veritabanı çakışma hataları
-    if (error.code === 'P2002') {
-      return reply.status(400).send({ error: "Bu bilgilerle zaten kayıtlı bir abonelik var." });
-    }
-
-    // 4. Genel sunucu hatası
-    return reply.status(500).send({ error: "Sunucu hatası, lütfen tekrar deneyin." });
+    return reply.code(400).send({ error: error.message });
   }
 };
 
-const show = async (req, reply) => await service.getById(req.params.id);
+const getAllSubscriptions = async (req, reply) => {
+  try {
+    const subs = await subscriptionService.getAllSubscriptions();
+    return reply.code(200).send(subs);
+  } catch (error) {
+    return reply.code(500).send({ error: error.message });
+  }
+};
 
-module.exports = { index, store, show, getPending, approve };
+module.exports = { applySubscription, getAllSubscriptions };

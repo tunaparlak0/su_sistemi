@@ -1,63 +1,46 @@
 const prisma = require('../config/prisma');
-const { generateInvoiceId } = require('../utils/idGenerator');
-const getAll = async () => await prisma.subscription.findMany();
 
-const findPending = async () => await prisma.subscription.findMany({ 
-    where: { status: "PENDING" } 
-});
+const applySubscription = async (data) => {
+  const { name, surname, mail, telephone, idNo, subscriptionId } = data;
 
-const updateStatus = async (id, status) => {
-    return await prisma.subscription.update({
-        where: { id: id },
-        data: { status }
-    });
-};
+  // 1. Aboneliğin veritabanında var olup olmadığını kontrol et
+  const existingSub = await prisma.subscription.findUnique({
+    where: { id: subscriptionId }
+  });
 
-const createSubscriptionRequest = async (data) => {
-    // 1. Gelen veriyi güvenle al
-    const { name, surname, mail, telephone, address, idNo, meterNo } = data;
+  if (!existingSub) {
+    throw new Error("Girilen abonelik numarası bulunamadı.");
+  }
 
-    // 2. Zorunlu alan kontrolü (Hata yönetimini kolaylaştırır)
-    if (!meterNo) {
-        throw new Error("Sayaç numarası zorunludur.");
+  // 2. Kullanıcıyı oluştur ve ilgili aboneliğe bağla
+  const newUser = await prisma.user.create({
+    data: {
+      name,
+      surname,
+      mail,
+      telephone,
+      idNo,
+      subscriptionId: subscriptionId // Kullanıcıyı bu aboneliğe bağlıyoruz
     }
+  });
 
-    // 3. Sayaç kontrolü: Bu sayaçta aktif biri var mı?
-    const activeSubscription = await prisma.subscription.findFirst({
-        where: { 
-            meterNo: meterNo, 
-            status: "ACTIVE" 
-        }
-    });
+  // 3. Aboneliğin durumunu başvuruldu (PENDING) olarak güncelle
+  const updatedSubscription = await prisma.subscription.update({
+    where: { id: subscriptionId },
+    data: { status: "PENDING" },
+    include: { owners: true }
+  });
 
-    if (activeSubscription) {
-        throw new Error("Bu sayaç numarasına ait halihazırda aktif bir abonelik bulunmaktadır.");
-    }
-
-    // 4. Kullanıcıyı ve aboneliği oluştur
-    return await prisma.user.create({
-        data: {
-            name,
-            surname,
-            mail,
-            telephone,
-            subscription: {
-                create: {
-                    meterNo: meterNo, // Formdan gelen numarayı kullan
-                    idNo,
-                    address,
-                    status: "PENDING",
-                    dueDate: new Date(new Date().setDate(new Date().getDate() + 10))
-                }
-            }
-        }
-    });
-};
-const getById = async (id) => {
-    return await prisma.subscription.findUnique({
-        where: { id: id },
-        include: { owners: { select: { name: true, surname: true } } }
-    });
+  return {
+    user: newUser,
+    subscription: updatedSubscription
+  };
 };
 
-module.exports = { getAll, createSubscriptionRequest, getById, findPending, updateStatus };
+const getAllSubscriptions = async () => {
+  return await prisma.subscription.findMany({
+    include: { owners: true, meter: true }
+  });
+};
+
+module.exports = { applySubscription, getAllSubscriptions };

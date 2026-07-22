@@ -9,14 +9,10 @@ datasource db {
 
 model Subscription {
   id             String    @id // idGenerator ile kendin vereceksin (örn: sub_xxxx)
-  idNo           String?
-  taxNo          String?
-  status         String    @default("PENDING")
-  startDate      DateTime  @default(now())
-  dueDate        DateTime
-  // Hangi sayaçla ilişkili?
-  meterId        String
-  meter          Meter     @relation(fields: [meterId], references: [id])
+  status         String    @default("FREE") // FREE, PENDING , ACTIVE
+  startDate      DateTime?  @default(now())
+  meterId        String?
+  meter          Meter?     @relation(fields: [meterId], references: [meterNo])
   owners         User[]    
   invoices       Invoice[]
   logs           SubscriptionLog[]
@@ -24,7 +20,8 @@ model Subscription {
 
 model User {
   id             String        @id @default(uuid())
-  idNo           String        @unique
+  idNo           String?       
+  taxNo          String?
   name           String
   surname        String
   telephone      String?       
@@ -68,11 +65,10 @@ model SubscriptionLog {
   subscriptionId String?
   subscription   Subscription? @relation(fields: [subscriptionId], references: [id])
   meterId        String?
-  meter          Meter?        @relation(fields: [meterId], references: [id], onDelete: SetNull)
+  meter          Meter?        @relation(fields: [meterId], references: [meterNo], onDelete: SetNull)
 }
 model Meter {
-  id             String            @id  // idGenerator ile autoincrement yapıcaz abone nosu gibi bir şey olucak
-  meterNo        String            @unique // SK-000001 gibi sayaç numarası
+  meterNo        String            @id  //abone nosu gibi bir şey olucak
   address        String
   subscriptions  Subscription[]    
   logs           SubscriptionLog[]

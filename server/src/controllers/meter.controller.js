@@ -1,21 +1,23 @@
-// controllers/meter.controller.js
 const meterService = require('../services/meter.service');
 
 const createMeter = async (req, reply) => {
   try {
-    // DİKKAT: req.body parametresini buraya ekliyoruz ki servise gitsin
-    const meter = await meterService.createMeter(req.body);
-    
+    const { address } = req.body;
+    if (!address) {
+      return reply.code(400).send({ error: "Adres alanı zorunludur." });
+    }
+
+    const newMeter = await meterService.createMeter({ address });
     return reply.code(201).send({
-      message: "Sayaç başarıyla oluşturuldu.",
-      data: meter
+      message: "Sayaç ve bağlı abonelik başarıyla oluşturuldu.",
+      data: newMeter
     });
   } catch (error) {
     return reply.code(500).send({ error: error.message });
   }
 };
 
-const getMeters = async (req, reply) => {
+const getAllMeters = async (req, reply) => {
   try {
     const meters = await meterService.getAllMeters();
     return reply.code(200).send(meters);
@@ -24,4 +26,4 @@ const getMeters = async (req, reply) => {
   }
 };
 
-module.exports = { createMeter, getMeters };
+module.exports = { createMeter, getAllMeters };
