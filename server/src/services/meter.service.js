@@ -26,7 +26,7 @@ const createMeter = async (data) => {
   const newSubscription = await prisma.subscription.create({
     data: {
       id: newSubId,
-      status: "FREE",
+      status: "NULL",
       meterId: newMeterNo
     }
   });

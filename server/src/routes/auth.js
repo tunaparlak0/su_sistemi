@@ -1,7 +1,6 @@
-// server/src/routes/auth.js
 const authService = require('../services/auth.service');
 
-async function authRoutes(fastify) {
+async function authRoutes(fastify, options) {
   fastify.post('/admin-login-secret', async (req, reply) => {
     try {
       const { id, token } = req.body;
@@ -12,3 +11,6 @@ async function authRoutes(fastify) {
     }
   });
 }
+
+// DİKKAT: Burada nesne veya başka bir şey değil, doğrudan fonksiyonu export etmelisin!
+module.exports = authRoutes;

@@ -1,23 +1,19 @@
-const service = require('../services/invoice.service');
+const invoiceService = require('../services/invoice.service');
 
-const store = async (req, reply) => {
+const getInvoices = async (req, reply) => {
   try {
-    const invoice = await service.create(req.body);
-    return reply.status(201).send(invoice);
-  } catch (err) {
-    return reply.status(500).send({ message: "Fatura oluşturulamadı", error: err.message });
+    const { subscriptionId } = req.params;
+
+    if (!subscriptionId) {
+      return reply.code(400).send({ error: "Abonelik numarası gereklidir." });
+    }
+
+    const invoices = await invoiceService.getInvoicesBySubscriptionId(subscriptionId);
+
+    return reply.code(200).send(invoices);
+  } catch (error) {
+    return reply.code(500).send({ error: error.message });
   }
 };
 
-const getBySub = async (req, reply) => {
-  const { subscriptionId } = req.params;
-  
-  // Eğer id null veya "null" ise boş dizi dön
-  if (!subscriptionId || subscriptionId === 'null') {
-    return [];
-  }
-  
-  return await service.getBySubscription(subscriptionId);
-};
-
-module.exports = { store, getBySub };
+module.exports = { getInvoices };

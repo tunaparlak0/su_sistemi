@@ -9,7 +9,7 @@ datasource db {
 
 model Subscription {
   id             String    @id // idGenerator ile kendin vereceksin (örn: sub_xxxx)
-  status         String    @default("FREE") // FREE, PENDING , ACTIVE
+  status         String    @default("NULL") // NULL, PENDING , ACTIVE
   startDate      DateTime?  @default(now())
   meterId        String?
   meter          Meter?     @relation(fields: [meterId], references: [meterNo])
@@ -29,7 +29,7 @@ model User {
   
   // User bir aboneliğe bağlı olabilir, ama zorunlu değil.
   subscription   Subscription? @relation(fields: [subscriptionId], references: [id])
-  subscriptionId String?
+  subscriptionId String?       @unique  
   worker         Worker?
   logs           SubscriptionLog[]
 }
