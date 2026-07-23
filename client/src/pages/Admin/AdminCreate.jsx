@@ -9,7 +9,7 @@ export default function AdminCreate() {
     surname: '', 
     mail: '', 
     telephone: '', 
-    idNo: '', // TC Kimlik Numarası state'i eklendi
+    idNo: '', 
     role: 'WORKER' 
   });
   

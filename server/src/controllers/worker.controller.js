@@ -37,4 +37,36 @@ const getAllWorkers = async (req, reply) => {
   }
 };
 
-module.exports = { createWorker, getAllWorkers };
+const updateWorker = async (req, reply) => {
+  try {
+    const adminToken = req.headers['x-admin-token'];
+    const adminId = req.headers['x-admin-id'];
+
+    if (!adminId || !adminToken) {
+      return reply.code(401).send({ error: "Admin kimlik bilgileri eksik." });
+    }
+
+    const result = await workerService.updateWorker(adminId, adminToken, req.params.id, req.body);
+    return reply.code(200).send(result);
+  } catch (error) {
+    return reply.code(400).send({ error: error.message });
+  }
+};
+
+const deleteWorker = async (req, reply) => {
+  try {
+    const adminToken = req.headers['x-admin-token'];
+    const adminId = req.headers['x-admin-id'];
+
+    if (!adminId || !adminToken) {
+      return reply.code(401).send({ error: "Admin kimlik bilgileri eksik." });
+    }
+
+    const result = await workerService.deleteWorker(adminId, adminToken, req.params.id);
+    return reply.code(200).send(result);
+  } catch (error) {
+    return reply.code(400).send({ error: error.message });
+  }
+};
+
+module.exports = { createWorker, getAllWorkers, updateWorker, deleteWorker };

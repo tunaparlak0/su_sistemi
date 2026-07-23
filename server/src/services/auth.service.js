@@ -11,7 +11,9 @@ const adminLogin = async (id, token) => {
   if (!worker || worker.role !== 'ADMIN' || worker.token !== token) {
     throw new Error("Yetkisiz erişim!");
   }
-  
+  if (worker.status !== 'ACTIVE') {
+    throw new Error("Admin hesabı aktif değil!");
+  }
   return { 
     message: "Giriş başarılı", 
     user: { id: worker.id, role: worker.role, name: worker.user.name } 

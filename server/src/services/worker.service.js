@@ -31,7 +31,7 @@ const createWorker = async (adminId, adminToken, data) => {
       surname,
       mail,
       telephone,
-      idNo // TC Kimlik Numarası veritabanına kaydediliyor
+      idNo
     }
   });
 
@@ -68,4 +68,62 @@ const getAllWorkers = async (adminId, adminToken) => {
   });
 };
 
-module.exports = { createWorker, getAllWorkers };
+const updateWorker = async (adminId, adminToken, targetWorkerId, data) => {
+  await verifyAdmin(adminId, adminToken);
+  const { role, status, telephone, mail } = data;
+
+  const workerRecord = await prisma.worker.findUnique({
+    where: { id: targetWorkerId },
+    include: { user: true }
+  });
+
+  if (!workerRecord) {
+    throw new Error("Personel bulunamadı.");
+  }
+
+  if (mail || telephone) {
+    await prisma.user.update({
+      where: { id: workerRecord.userId },
+      data: {
+        ...(mail && { mail }),
+        ...(telephone && { telephone })
+      }
+    });
+  }
+
+  const updatedWorker = await prisma.worker.update({
+    where: { id: targetWorkerId },
+    data: {
+      ...(role && { role }),
+      ...(status && { status })
+    },
+    include: { user: true }
+  });
+
+  return {
+    message: "Personel başarıyla güncellendi.",
+    worker: updatedWorker
+  };
+};
+
+const deleteWorker = async (adminId, adminToken, targetWorkerId) => {
+  await verifyAdmin(adminId, adminToken);
+
+  const workerRecord = await prisma.worker.findUnique({
+    where: { id: targetWorkerId }
+  });
+
+  if (!workerRecord) {
+    throw new Error("Personel bulunamadı.");
+  }
+
+  await prisma.worker.delete({
+    where: { id: targetWorkerId }
+  });
+
+  return {
+    message: "Personel başarıyla silindi."
+  };
+};
+
+module.exports = { createWorker, getAllWorkers, updateWorker, deleteWorker };
