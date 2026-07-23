@@ -11,7 +11,7 @@ export default function AdminLogin() {
     setErrorMessage('');
 
     try {
-      // Backend'deki giriş endpoint'ine istek atıyoruz
+      
       const response = await fetch('http://localhost:3000/admin-login-secret', {
         method: 'POST',
         headers: {

@@ -1,6 +1,5 @@
 const API_URL = "http://localhost:3000";
 
-// Genel yardımcı fonksiyon (Admin tokenlarını otomatik ekler)
 const getHeaders = () => {
   const headers = { 'Content-Type': 'application/json' };
   const adminId = localStorage.getItem('adminId');
@@ -13,7 +12,6 @@ const getHeaders = () => {
   return headers;
 };
 
-// Abonelik Başvurusu
 export const postSubscription = async (data) => {
   const response = await fetch(`${API_URL}/subscriptions`, {
     method: 'POST',
@@ -23,11 +21,27 @@ export const postSubscription = async (data) => {
   return response.json();
 };
 
-// Admin Paneli İçin Örnek İstek (Dashboard verilerini çeker)
 export const getAdminDashboard = async () => {
   const response = await fetch(`${API_URL}/admin/dashboard`, {
     method: 'GET',
     headers: getHeaders(),
   });
   return response.json();
+};
+
+// DİKKAT: Burada 'export' kelimesinin olduğundan emin ol!
+export const createWorkerApi = async (formData) => {
+  const response = await fetch(`${API_URL}/workers`, {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify(formData),
+  });
+  
+  const result = await response.json();
+  
+  if (!response.ok) {
+    throw new Error(result.error || result.message || "İşlem başarısız.");
+  }
+  
+  return result;
 };

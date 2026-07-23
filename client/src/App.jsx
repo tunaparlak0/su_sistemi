@@ -8,7 +8,7 @@ import AdminLogin from './pages/Admin/AdminLogin';
 import AdminPanel from './pages/Admin/AdminPanel'; 
 import AdminCreate from './pages/Admin/AdminCreate';
 import SubscriptionApproval from './pages/Admin/SubscriptionApproval';
-
+import AdminWorkers from './pages/Admin/AdminWorkers';
 function App() {
   return (
     <Router>
@@ -19,6 +19,7 @@ function App() {
         <Route path="/abonelik-basvuru" element={<Subscription />} />
         <Route path="/fatura-goruntuleme" element={<Invoices />} />
         <Route path="/admin-olustur" element={<AdminCreate />} />
+        <Route path="/admin/workers" element={<AdminWorkers />} />
         <Route path="/abonelik-onay" element={<SubscriptionApproval />} />
       </Routes>
     </Router>
