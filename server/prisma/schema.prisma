@@ -48,13 +48,22 @@ model Invoice {
 }
 model Worker {
   id        String   @unique
-  role      String   @default("WORKER") // WORKER veya ADMIN
+  role      String   @default("WORKER") // ADMIN, WORKER, PERSONEL
   status    String   @default("ACTIVE") //ACTIVE veya PASSIVE
-  token     String
+  password  String   
   user      User     @relation(fields: [userId], references: [id])
   userId    String   @unique
+  logs      WorkerLog[]
 }
 
+model WorkerLog {
+  id          String   @id @default(uuid())
+  action      String   // Örn: sayaç okuma, abonelik onay, personel oluşturma
+  description String?  // Yapılan işlemin detay metni (Örn: "000001 numaralı sayacın okuması yapıldı.")
+  createdAt   DateTime @default(now())
+  workerId    String
+  worker      Worker   @relation(fields: [workerId], references: [id])
+}
 model SubscriptionLog {
   id             String       @id @default(uuid())
   meterNo        String       
@@ -70,6 +79,7 @@ model SubscriptionLog {
 model Meter {
   meterNo        String            @id  //abone nosu gibi bir şey olucak
   address        String
+  type           String            @default("EV") // "EV" , "KOY" , "KURUMSAL"
   subscriptions  Subscription[]    
   logs           SubscriptionLog[]
 }

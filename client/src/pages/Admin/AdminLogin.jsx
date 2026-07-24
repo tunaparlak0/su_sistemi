@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 export default function AdminLogin() {
-  const [adminData, setAdminData] = useState({ id: '', token: '' });
+  const [adminData, setAdminData] = useState({ id: '', password: '' });
   const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
 
@@ -11,7 +11,6 @@ export default function AdminLogin() {
     setErrorMessage('');
 
     try {
-      
       const response = await fetch('http://localhost:3000/admin-login-secret', {
         method: 'POST',
         headers: {
@@ -23,14 +22,17 @@ export default function AdminLogin() {
       const data = await response.json();
 
       if (!response.ok) {
-        // Backend'den hata dönerse (Yetkisiz erişim vb.) kullanıcıya göster
         setErrorMessage(data.message || "Giriş başarısız!");
         return;
       }
 
-      // Giriş başarılıysa bilgileri localStorage'a kaydet ve panelle yönlendir
+      // 📌 1. JWT Token ve ID'yi kaydediyoruz
+      localStorage.setItem('token', data.token);
       localStorage.setItem('adminId', adminData.id);
-      localStorage.setItem('adminToken', adminData.token);
+      
+      // 📌 2. KRİTİK EKLEME: verifyAdmin kontrolünün geçmesi için düz metin şifreyi de kaydediyoruz!
+      localStorage.setItem('adminPassword', adminData.password);
+      
       navigate('/admin-panel');
 
     } catch {
@@ -61,8 +63,8 @@ export default function AdminLogin() {
           type="password" 
           placeholder="Token (Şifre)" 
           className="p-3 border rounded w-full outline-none focus:ring-2 focus:ring-blue-500" 
-          value={adminData.token}
-          onChange={(e) => setAdminData({...adminData, token: e.target.value})} 
+          value={adminData.password}
+          onChange={(e) => setAdminData({...adminData, password: e.target.value})} 
           required 
         />
 

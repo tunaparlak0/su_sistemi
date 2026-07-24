@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { UserPlus, CheckCircle, ShieldCheck, Users, Home, Globe } from 'lucide-react';
+import { UserPlus, CheckCircle, ShieldCheck, Users, Home, Globe, Receipt } from 'lucide-react';
 
 export default function AdminPanel() {
   const navigate = useNavigate();
@@ -43,7 +43,7 @@ export default function AdminPanel() {
             <h1 className="text-3xl font-bold text-slate-900">Yönetim Paneli</h1>
           </div>
 
-          {/* Kartlar (3'lü Grid Yapısı) */}
+          {/* Kartlar (Grid Yapısı) */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             
             {/* Yeni Admin Ekle */}
@@ -85,6 +85,20 @@ export default function AdminPanel() {
               <div>
                 <h3 className="text-lg font-bold text-slate-900">Personel Yönetimi</h3>
                 <p className="text-sm text-slate-500">Mevcut personelleri düzenleyin</p>
+              </div>
+            </button>
+
+            {/* Fatura / Sayaç Okuma İşlemleri */}
+            <button 
+              onClick={() => navigate('/fatura-olustur')}
+              className="p-6 bg-white border border-slate-200 rounded-2xl shadow-sm hover:border-blue-300 hover:shadow-md transition-all text-left flex flex-col gap-4"
+            >
+              <div className="p-4 bg-amber-50 rounded-xl w-fit">
+                <Receipt className="text-amber-600" size={28} />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-slate-900">Fatura Kes / Sayaç Oku</h3>
+                <p className="text-sm text-slate-500">Tüketim girip otomatik fatura oluşturun</p>
               </div>
             </button>
 

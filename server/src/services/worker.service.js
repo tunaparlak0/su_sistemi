@@ -8,22 +8,22 @@ const verifyAdmin = async (adminId, token) => {
     include: { user: true }
   });
 
-  if (!workerRecord || workerRecord.role !== 'ADMIN' || workerRecord.token !== token) {
+  if (!workerRecord || workerRecord.role !== 'ADMIN' || workerRecord.password !== token) {
     throw new Error("Admin yetkisi gerekiyor!");
   }
   return true;
 };
 
-const createWorker = async (adminId, adminToken, data) => {
-  await verifyAdmin(adminId, adminToken);
+const createWorker = async (adminId, adminPassword, data) => {
+  await verifyAdmin(adminId, adminPassword);
   const { name, surname, mail, telephone, idNo, role = "WORKER" } = data;
 
   if (!name || !surname || !mail) {
     throw new Error("Ad, soyad ve e-posta alanları zorunludur.");
   }
   
-  const workerId = generateWorkerId(name, surname);
-  const generatedToken = generateRandomToken();
+  const workerId = generateWorkerId(name, surname, role);
+  const generatedPassword = generateRandomPassword();
   
   const newUser = await prisma.user.create({
     data: {
@@ -31,7 +31,7 @@ const createWorker = async (adminId, adminToken, data) => {
       surname,
       mail,
       telephone,
-      idNo
+      idNo,
     }
   });
 
@@ -40,7 +40,7 @@ const createWorker = async (adminId, adminToken, data) => {
       id: workerId,
       role: role, 
       status: "ACTIVE",
-      token: generatedToken,
+      password: generatedPassword,
       userId: newUser.id
     },
     include: {
@@ -52,14 +52,14 @@ const createWorker = async (adminId, adminToken, data) => {
     message: "Personel başarıyla oluşturuldu.",
     generatedCredentials: {
       workerId: workerId,
-      token: generatedToken 
+      password: generatedPassword 
     },
     worker: newWorker
   };
 };
 
-const getAllWorkers = async (adminId, adminToken) => {
-  await verifyAdmin(adminId, adminToken);
+const getAllWorkers = async (adminId, adminPassword) => {
+  await verifyAdmin(adminId, adminPassword);
 
   return await prisma.worker.findMany({
     include: {
@@ -68,8 +68,8 @@ const getAllWorkers = async (adminId, adminToken) => {
   });
 };
 
-const updateWorker = async (adminId, adminToken, targetWorkerId, data) => {
-  await verifyAdmin(adminId, adminToken);
+const updateWorker = async (adminId, adminPassword, targetWorkerId, data) => {
+  await verifyAdmin(adminId, adminPassword);
   const { role, status, telephone, mail } = data;
 
   const workerRecord = await prisma.worker.findUnique({
@@ -106,8 +106,8 @@ const updateWorker = async (adminId, adminToken, targetWorkerId, data) => {
   };
 };
 
-const deleteWorker = async (adminId, adminToken, targetWorkerId) => {
-  await verifyAdmin(adminId, adminToken);
+const deleteWorker = async (adminId, adminPassword, targetWorkerId) => {
+  await verifyAdmin(adminId, adminPassword);
 
   const workerRecord = await prisma.worker.findUnique({
     where: { id: targetWorkerId }

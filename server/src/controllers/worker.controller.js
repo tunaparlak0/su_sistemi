@@ -2,14 +2,14 @@ const workerService = require('../services/worker.service');
 
 const createWorker = async (req, reply) => {
   try {
-    const adminToken = req.headers['x-admin-token'];
+    const adminPassword = req.headers['x-admin-password'];
     const adminId = req.headers['x-admin-id'];
 
-    if (!adminId || !adminToken) {
+    if (!adminId || !adminPassword) {
       return reply.code(401).send({ error: "Admin kimlik bilgileri eksik." });
     }
 
-    const result = await workerService.createWorker(adminId, adminToken, req.body);
+    const result = await workerService.createWorker(adminId, adminPassword, req.body);
 
     return reply.code(201).send({
       message: "Personel başarıyla oluşturuldu.",
@@ -22,14 +22,14 @@ const createWorker = async (req, reply) => {
 
 const getAllWorkers = async (req, reply) => {
   try {
-    const adminToken = req.headers['x-admin-token'];
+    const adminPassword = req.headers['x-admin-password'];
     const adminId = req.headers['x-admin-id'];
 
-    if (!adminId || !adminToken) {
+    if (!adminId || !adminPassword) {
       return reply.code(401).send({ error: "Admin kimlik bilgileri eksik." });
     }
 
-    const workers = await workerService.getAllWorkers(adminId, adminToken);
+    const workers = await workerService.getAllWorkers(adminId, adminPassword);
 
     return reply.code(200).send(workers);
   } catch (error) {
@@ -39,14 +39,14 @@ const getAllWorkers = async (req, reply) => {
 
 const updateWorker = async (req, reply) => {
   try {
-    const adminToken = req.headers['x-admin-token'];
+    const adminPassword = req.headers['x-admin-password'];
     const adminId = req.headers['x-admin-id'];
 
-    if (!adminId || !adminToken) {
+    if (!adminId || !adminPassword) {
       return reply.code(401).send({ error: "Admin kimlik bilgileri eksik." });
     }
 
-    const result = await workerService.updateWorker(adminId, adminToken, req.params.id, req.body);
+    const result = await workerService.updateWorker(adminId, adminPassword, req.params.id, req.body);
     return reply.code(200).send(result);
   } catch (error) {
     return reply.code(400).send({ error: error.message });
@@ -55,14 +55,14 @@ const updateWorker = async (req, reply) => {
 
 const deleteWorker = async (req, reply) => {
   try {
-    const adminToken = req.headers['x-admin-token'];
+    const adminPassword = req.headers['x-admin-password'];
     const adminId = req.headers['x-admin-id'];
 
-    if (!adminId || !adminToken) {
+    if (!adminId || !adminPassword) {
       return reply.code(401).send({ error: "Admin kimlik bilgileri eksik." });
     }
 
-    const result = await workerService.deleteWorker(adminId, adminToken, req.params.id);
+    const result = await workerService.deleteWorker(adminId, adminPassword, req.params.id);
     return reply.code(200).send(result);
   } catch (error) {
     return reply.code(400).send({ error: error.message });

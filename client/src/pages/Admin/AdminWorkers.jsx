@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Users, ShieldCheck, Home, ArrowLeft, Mail, Phone, UserCheck, Shield, X, Trash2, Check } from 'lucide-react';
+import { getWorkersApi, updateWorkerApi, deleteWorkerApi } from '../../services/api';
 
 export default function AdminWorkers() {
   const [workers, setWorkers] = useState([]);
@@ -20,47 +21,12 @@ export default function AdminWorkers() {
 
   const navigate = useNavigate();
 
-  const fetchWorkers = async () => {
-    try {
-      const response = await fetch('http://localhost:3000/workers', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-admin-id': localStorage.getItem('adminId'),
-          'x-admin-token': localStorage.getItem('adminToken')
-        }
-      });
-
-      const result = await response.json();
-      if (!response.ok) throw new Error(result.error || "Personel listesi alınamadı.");
-      setWorkers(Array.isArray(result) ? result : result.workers || []);
-    } catch (err) {
-      setErrorMessage(err.message || "Sunucuya bağlanılamadı.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
- // Personelleri backend'den çekme
   useEffect(() => {
     const fetchWorkers = async () => {
       try {
-        const response = await fetch('http://localhost:3000/workers', {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-admin-id': localStorage.getItem('adminId'),
-            'x-admin-token': localStorage.getItem('adminToken')
-          }
-        });
-
-        const result = await response.json();
-
-        if (!response.ok) {
-          throw new Error(result.error || "Personel listesi alınamadı.");
-        }
-
-        setWorkers(Array.isArray(result) ? result : result.workers || []);
+        setLoading(true);
+        const data = await getWorkersApi();
+        setWorkers(data);
       } catch (err) {
         setErrorMessage(err.message || "Sunucuya bağlanılamadı.");
       } finally {
@@ -71,12 +37,23 @@ export default function AdminWorkers() {
     fetchWorkers();
   }, []);
 
+  const fetchWorkersList = async () => {
+    try {
+      setLoading(true);
+      const data = await getWorkersApi();
+      setWorkers(data);
+    } catch (err) {
+      setErrorMessage(err.message || "Sunucuya bağlanılamadı.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const filteredWorkers = workers.filter((worker) => {
     const fullName = `${worker.user?.name || ''} ${worker.user?.surname || ''}`.toLowerCase();
     return fullName.includes(searchTerm.toLowerCase());
   });
 
-  // Düzenleme Modalını Aç
   const handleOpenEdit = (worker) => {
     setSelectedWorker(worker);
     setEditFormData({
@@ -88,50 +65,26 @@ export default function AdminWorkers() {
     setIsEditing(true);
   };
 
-  // Güncellemeyi Kaydet
   const handleUpdateSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch(`http://localhost:3000/workers/${selectedWorker.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-admin-id': localStorage.getItem('adminId'),
-          'x-admin-token': localStorage.getItem('adminToken')
-        },
-        body: JSON.stringify(editFormData)
-      });
-
-      const result = await response.json();
-      if (!response.ok) throw new Error(result.error || "Güncelleme başarısız.");
-
+      await updateWorkerApi(selectedWorker.id, editFormData);
       alert("Personel başarıyla güncellendi.");
       setIsEditing(false);
-      fetchWorkers(); // Listeyi yenile
+      fetchWorkersList();
     } catch (err) {
       alert(err.message);
     }
   };
 
-  // Personel Sil
   const handleDeleteWorker = async (workerId) => {
     if (!window.confirm("Bu personeli silmek istediğinize emin misiniz?")) return;
 
     try {
-      const response = await fetch(`http://localhost:3000/workers/${workerId}`, {
-        method: 'DELETE',
-        headers: {
-          'x-admin-id': localStorage.getItem('adminId'),
-          'x-admin-token': localStorage.getItem('adminToken')
-        }
-      });
-
-      const result = await response.json();
-      if (!response.ok) throw new Error(result.error || "Silme işlemi başarısız.");
-
+      await deleteWorkerApi(workerId);
       alert("Personel silindi.");
       setIsEditing(false);
-      fetchWorkers();
+      fetchWorkersList();
     } catch (err) {
       alert(err.message);
     }

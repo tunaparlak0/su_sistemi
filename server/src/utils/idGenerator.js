@@ -1,4 +1,3 @@
-
 const formatMeterNo = (number) => {
     return String(number).padStart(6, '0');
 };
@@ -14,8 +13,8 @@ const generateWorkerId = (name, surname) => {
   
   return `${firstInitial}${lastInitial}${randomDigits}`;
 };
-const generateRandomToken = () => {
+const generateRandomPassword = () => {
   // 8 haneli rastgele harf ve sayı karışımı token
   return Math.random().toString(36).substring(2, 10).toUpperCase();
 };
-module.exports = { formatMeterNo, generateSubscriptionId, generateWorkerId, generateRandomToken };
+module.exports = { formatMeterNo, generateSubscriptionId, generateWorkerId, generateRandomPassword };

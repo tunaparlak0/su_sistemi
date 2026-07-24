@@ -1,13 +1,22 @@
 const fastify = require('fastify')({ logger: true });
 const prisma = require('./config/prisma');
-
+require('dotenv').config();
 // CORS ayarlarında PUT ve DELETE metodlarına izin veriyoruz
-fastify.register(require('@fastify/cors'), {
-  origin: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'x-admin-id', 'x-admin-token']
+fastify.register(require('@fastify/jwt'), {
+  secret: process.env.JWT_SECRET
 });
-
+fastify.decorate("authenticate", async function (request, reply) {
+  try {
+    await request.jwtVerify();
+  } catch (err) {
+    reply.code(401).send({ error: "Geçersiz veya eksik token!" });
+  }
+});
+fastify.register(require('@fastify/cors'), {
+  origin: true, 
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'] // 📌 PATCH metodunu buraya ekledik!
+});
 fastify.register(require('./routes/subscription'), { prefix: '/subscriptions' });
 fastify.register(require('./routes/invoice'), { prefix: '/invoices' });
 //fastify.register(require('./routes/user'), { prefix: '/users' });

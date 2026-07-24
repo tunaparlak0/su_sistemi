@@ -1,12 +1,15 @@
-const prisma = require('../config/prisma');
-
 module.exports = async (request, reply) => {
-  const token = request.headers['x-admin-token']; // Token'ı header'dan alacağız
-  const userId = request.headers['x-admin-id'];
+  try {
+    // İstek başlığındaki Bearer token'ı doğrula ve çöz
+    await request.jwtVerify(); 
+    
+    // Çözülen token içindeki bilgilere request.user ile ulaşabiliriz
+    const { role } = request.user; 
 
-  const user = await prisma.user.findUnique({ where: { id: userId } });
-
-  if (!user || user.role !== 'ADMIN' || user.token !== token) {
-    return reply.status(403).send({ message: "Admin yetkisi gerekiyor!" });
+    if (role !== 'ADMIN') {
+      return reply.code(403).send({ error: "Bu işlem için yetkiniz yok (Admin gerekli)!" });
+    }
+  } catch (err) {
+    return reply.code(401).send({ error: "Geçersiz veya eksik token!" });
   }
 };

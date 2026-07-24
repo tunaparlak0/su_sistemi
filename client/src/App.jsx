@@ -9,6 +9,7 @@ import AdminPanel from './pages/Admin/AdminPanel';
 import AdminCreate from './pages/Admin/AdminCreate';
 import SubscriptionApproval from './pages/Admin/SubscriptionApproval';
 import AdminWorkers from './pages/Admin/AdminWorkers';
+import InvoiceCreate from './pages/Admin/InvoiceCreate';
 function App() {
   return (
     <Router>
@@ -21,6 +22,7 @@ function App() {
         <Route path="/admin-olustur" element={<AdminCreate />} />
         <Route path="/admin/workers" element={<AdminWorkers />} />
         <Route path="/abonelik-onay" element={<SubscriptionApproval />} />
+        <Route path="/fatura-olustur" element={<InvoiceCreate />} />
       </Routes>
     </Router>
   );
