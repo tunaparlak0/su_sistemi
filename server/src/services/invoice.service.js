@@ -16,7 +16,25 @@ const getInvoicesBySubscriptionId = async (subscriptionId) => {
 
   return invoices;
 };
+const getInvoiceById = async (invoiceId) => {
+  const invoice = await prisma.invoice.findUnique({
+    where: { id: invoiceId },
+    include: {
+      subscription: {
+        include: {
+          meter: true,
+          owners: true
+        }
+      }
+    }
+  });
 
+  if (!invoice) {
+    throw new Error("Fatura bulunamadı.");
+  }
+
+  return invoice;
+};
 const createInvoice = async (data, workerId) => {
   const { subscriptionId, usedWater } = data;
 
@@ -90,10 +108,15 @@ const payInvoice = async (invoiceId) => {
     throw new Error("Fatura bulunamadı.");
   }
 
+  // 📌 Eğer fatura zaten ödenmişse tekrar ödemeye çalışmasın
+  if (invoice.isPaid) {
+    throw new Error("Bu fatura zaten daha önce ödenmiştir.");
+  }
+
   return await prisma.invoice.update({
     where: { id: invoiceId },
     data: { isPaid: true }
   });
 };
 
-module.exports = { getInvoicesBySubscriptionId, createInvoice, payInvoice };
+module.exports = { getInvoicesBySubscriptionId, createInvoice, payInvoice, getInvoiceById };

@@ -42,5 +42,13 @@ const createInvoice = async (req, reply) => {
     return reply.code(400).send({ error: error.message });
   }
 };
-
-module.exports = { getInvoices, createInvoice, payInvoice };
+const getInvoiceById = async (req, reply) => {
+  try {
+    const { id } = req.params;
+    const invoice = await invoiceService.getInvoiceById(id);
+    return reply.code(200).send(invoice);
+  } catch (error) {
+    return reply.code(404).send({ error: error.message });
+  }
+};
+module.exports = { getInvoices, createInvoice, payInvoice, getInvoiceById };

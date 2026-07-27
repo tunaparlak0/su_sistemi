@@ -29,23 +29,6 @@
       }
     };
 
-    const handlePay = async (invoiceId) => {
-      try {
-        const res = await fetch(`http://localhost:3000/invoices/${invoiceId}/pay`, {
-          method: 'PATCH'
-        });
-        const data = await res.json();
-
-        if (!res.ok) throw new Error(data.error || "Ödeme işlemi başarısız.");
-
-        alert("Fatura başarıyla ödendi!");
-        setInvoices(invoices.map(inv => inv.id === invoiceId ? { ...inv, isPaid: true } : inv));
-        setSelectedInvoice({ ...selectedInvoice, isPaid: true });
-      } catch (err) {
-        alert(err.message);
-      }
-    };
-
     return (
       <div className="min-h-screen bg-slate-100 flex flex-col justify-between">
         <div>
@@ -217,17 +200,20 @@
               {/* Butonlar */}
               <div className="flex gap-3">
                 {!selectedInvoice.isPaid ? (
-                  <button
-                    onClick={() => handlePay(selectedInvoice.id)}
-                    className="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-xl transition-colors shadow-md flex items-center justify-center gap-2"
-                  >
-                    Faturayı Öde
-                  </button>
-                ) : (
-                  <div className="w-full text-center py-3 bg-green-50 text-green-700 font-bold rounded-xl border border-green-200">
-                    Bu Fatura Ödenmiştir ✓
-                  </div>
-                )}
+  <button
+    onClick={() => {
+      setSelectedInvoice(null);
+      navigate(`/odeme/${selectedInvoice.id}`);
+    }}
+    className="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-xl transition-colors shadow-md flex items-center justify-center gap-2"
+  >
+    Ödeme Sayfasına Git
+  </button>
+) : (
+  <div className="w-full text-center py-3 bg-green-50 text-green-700 font-bold rounded-xl border border-green-200">
+    Bu Fatura Ödenmiştir ✓
+  </div>
+)}
                 <button
                   onClick={() => setSelectedInvoice(null)}
                   className="px-5 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl transition-colors"

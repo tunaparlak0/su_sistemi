@@ -14,6 +14,7 @@ import AdminUsers from './pages/Admin/AdminUsers';
 import AdminLogs from './pages/Admin/AdminLogs';
 import AdminMeters from './pages/Admin/AdminMeters';
 import About from './pages/About';
+import Payment from './pages/Payment';
 function App() {
   return (
     <Router>
@@ -26,6 +27,7 @@ function App() {
         <Route path="/admin-panel" element={<AdminPanel />} />
         <Route path="/abonelik-basvuru" element={<Subscription />} />
         <Route path="/fatura-goruntuleme" element={<Invoices />} />
+        <Route path="/odeme/:id" element={<Payment />} />
         <Route path="/admin-olustur" element={<AdminCreate />} />
         <Route path="/admin/workers" element={<AdminWorkers />} />
         <Route path="/abonelik-onay" element={<SubscriptionApproval />} />
