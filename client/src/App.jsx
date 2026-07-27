@@ -10,11 +10,16 @@ import AdminCreate from './pages/Admin/AdminCreate';
 import SubscriptionApproval from './pages/Admin/SubscriptionApproval';
 import AdminWorkers from './pages/Admin/AdminWorkers';
 import InvoiceCreate from './pages/Admin/InvoiceCreate';
+import AdminUsers from './pages/Admin/AdminUsers';
+import AdminLogs from './pages/Admin/AdminLogs';
+import AdminMeters from './pages/Admin/AdminMeters';
 function App() {
   return (
     <Router>
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/admin/users" element={<AdminUsers />} />
+        <Route path="/admin/logs" element={<AdminLogs />} />
         <Route path="/admin-login" element={<AdminLogin />} />
         <Route path="/admin-panel" element={<AdminPanel />} />
         <Route path="/abonelik-basvuru" element={<Subscription />} />
@@ -23,6 +28,7 @@ function App() {
         <Route path="/admin/workers" element={<AdminWorkers />} />
         <Route path="/abonelik-onay" element={<SubscriptionApproval />} />
         <Route path="/fatura-olustur" element={<InvoiceCreate />} />
+        <Route path="/admin/meters" element={<AdminMeters />} />
       </Routes>
     </Router>
   );

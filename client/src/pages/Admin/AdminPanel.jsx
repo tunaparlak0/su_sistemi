@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { UserPlus, CheckCircle, ShieldCheck, Users, Home, Globe, Receipt } from 'lucide-react';
+import { Gauge, UserPlus, CheckCircle, ShieldCheck, Users, Home, Globe, Receipt, UserCheck, History } from 'lucide-react';
 
 export default function AdminPanel() {
   const navigate = useNavigate();
@@ -102,6 +102,45 @@ export default function AdminPanel() {
               </div>
             </button>
 
+            {/* Kullanıcı Bilgileri */}
+            <button 
+              onClick={() => navigate('/admin/users')}
+              className="p-6 bg-white border border-slate-200 rounded-2xl shadow-sm hover:border-blue-300 hover:shadow-md transition-all text-left flex flex-col gap-4"
+            >
+              <div className="p-4 bg-indigo-50 rounded-xl w-fit">
+                <UserCheck className="text-indigo-600" size={28} />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-slate-900">Kullanıcı Bilgileri</h3>
+                <p className="text-sm text-slate-500">Sistemdeki tüm aboneleri görüntüleyin</p>
+              </div>
+            </button>
+
+            {/* Çalışan İşlem Geçmişi */}
+            <button 
+              onClick={() => navigate('/admin/logs')}
+              className="p-6 bg-white border border-slate-200 rounded-2xl shadow-sm hover:border-blue-300 hover:shadow-md transition-all text-left flex flex-col gap-4"
+            >
+              <div className="p-4 bg-purple-50 rounded-xl w-fit">
+                <History className="text-purple-600" size={28} />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-slate-900">İşlem Geçmişi</h3>
+                <p className="text-sm text-slate-500">Personele ait işlem loglarını inceleyin</p>
+              </div>
+            </button>
+<button 
+  onClick={() => navigate('/admin/meters')}
+  className="p-6 bg-white border border-slate-200 rounded-2xl shadow-sm hover:border-blue-300 hover:shadow-md transition-all text-left flex flex-col gap-4"
+>
+  <div className="p-4 bg-teal-50 rounded-xl w-fit">
+    <Gauge className="text-teal-600" size={28} />
+  </div>
+  <div>
+    <h3 className="text-lg font-bold text-slate-900">Sayaç Yönetimi</h3>
+    <p className="text-sm text-slate-500">Sayaçları ve abonelik geçmişini inceleyin</p>
+  </div>
+</button>
           </div>
         </div>
       </div>

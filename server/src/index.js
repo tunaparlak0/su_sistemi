@@ -19,7 +19,7 @@ fastify.register(require('@fastify/cors'), {
 });
 fastify.register(require('./routes/subscription'), { prefix: '/subscriptions' });
 fastify.register(require('./routes/invoice'), { prefix: '/invoices' });
-//fastify.register(require('./routes/user'), { prefix: '/users' });
+fastify.register(require('./routes/user'), { prefix: '/users' });
 //fastify.register(require('./routes/subsLog'), { prefix: '/logs' });
 fastify.register(require('./routes/auth'));
 fastify.register(require('./routes/meter'),{prefix:'/meters'});
