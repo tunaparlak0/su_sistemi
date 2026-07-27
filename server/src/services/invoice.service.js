@@ -18,37 +18,32 @@ const getInvoicesBySubscriptionId = async (subscriptionId) => {
 };
 
 const createInvoice = async (data, workerId) => {
-  const { meterNo, usedWater } = data;
+  const { subscriptionId, usedWater } = data;
 
-  // 1. Sayaç ve aktif aboneliği bul
-  const meter = await prisma.meter.findUnique({
-    where: { meterNo },
-    include: { 
-      subscriptions: {
-        where: { status: "ACTIVE" },
-        take: 1
-      }
-    }
+  // 1. Aboneliği ve bağlı olduğu sayaç ile tarife bilgisini bul
+  const subscription = await prisma.subscription.findUnique({
+    where: { id: subscriptionId },
+    include: { meter: true }
   });
 
-  if (!meter) {
-    throw new Error("Belirtilen numaraya ait sayaç bulunamadı.");
+  if (!subscription) {
+    throw new Error("Belirtilen numaraya ait abonelik bulunamadı.");
   }
 
-  if (!meter.subscriptions || meter.subscriptions.length === 0) {
-    throw new Error("Bu sayaca ait aktif bir abonelik bulunmuyor.");
+  if (subscription.status !== "ACTIVE") {
+    throw new Error("Bu abonelik aktif durumda değil.");
   }
 
-  const subscriptionId = meter.subscriptions[0].id;
+  const meter = subscription.meter;
 
   // 2. Tarife tipine göre birim fiyat ve vergi belirle (EV, KOY, KURUMSAL)
   let unitPrice = 10; 
   let taxRate = 0.10; 
 
-  if (meter.type === "KOY") {
+  if (meter && meter.type === "KOY") {
     unitPrice = 5;    
     taxRate = 0.05;
-  } else if (meter.type === "KURUMSAL") {
+  } else if (meter && meter.type === "KURUMSAL") {
     unitPrice = 20;   
     taxRate = 0.18;
   }
@@ -78,13 +73,14 @@ const createInvoice = async (data, workerId) => {
   await prisma.workerLog.create({
     data: {
       action: "CREATE_INVOICE",
-      description: `${meterNo} numaralı sayaç için ${waterAmount} m3 tüketimli fatura kesildi.`,
+      description: `${subscriptionId} numaralı abonelik için ${waterAmount} m3 tüketimli fatura kesildi.`,
       workerId: workerId
     }
   });
 
   return newInvoice;
 };
+
 const payInvoice = async (invoiceId) => {
   const invoice = await prisma.invoice.findUnique({
     where: { id: invoiceId }
@@ -99,4 +95,5 @@ const payInvoice = async (invoiceId) => {
     data: { isPaid: true }
   });
 };
+
 module.exports = { getInvoicesBySubscriptionId, createInvoice, payInvoice };

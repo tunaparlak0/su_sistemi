@@ -2,13 +2,13 @@ const prisma = require('../config/prisma');
 const { generateWorkerId, generateRandomPassword } = require('../utils/idGenerator');
 
 // Admin yetki kontrolü
-const verifyAdmin = async (adminId, token) => {
+const verifyAdmin = async (adminId, adminPassword) => {
   const workerRecord = await prisma.worker.findUnique({
     where: { id: adminId }, 
     include: { user: true }
   });
 
-  if (!workerRecord || workerRecord.role !== 'ADMIN' || workerRecord.password !== token) {
+  if (!workerRecord || workerRecord.role !== 'ADMIN' || workerRecord.password !== adminPassword) {
     throw new Error("Admin yetkisi gerekiyor!");
   }
   return true;

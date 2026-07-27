@@ -48,7 +48,7 @@ model Invoice {
 }
 model Worker {
   id        String   @unique
-  role      String   @default("WORKER") // ADMIN, WORKER, PERSONEL
+  role      String   @default("WORKER") // ADMIN, WORKER, IT
   status    String   @default("ACTIVE") //ACTIVE veya PASSIVE
   password  String   
   user      User     @relation(fields: [userId], references: [id])

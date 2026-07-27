@@ -4,17 +4,14 @@ import { ShieldCheck, Home, Globe, Receipt } from 'lucide-react';
 
 export default function InvoiceCreate() {
   const navigate = useNavigate();
-  const [meterNo, setMeterNo] = useState('');
+  const [subscriptionId, setSubscriptionId] = useState(''); // 📌 Abonelik No state'i
   const [usedWater, setUsedWater] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Token'ı hem 'token' hem 'adminToken' ihtimaline karşı kontrol edelim
       const token = localStorage.getItem('token') || localStorage.getItem('adminToken');
       
-      console.log("Gönderilen Token:", token); // F12 konsolunda token'ın dolu gelip gelmediğine bak
-
       if (!token) {
         throw new Error("Oturum açma bilgisi bulunamadı. Lütfen tekrar giriş yapın.");
       }
@@ -25,14 +22,14 @@ export default function InvoiceCreate() {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({ meterNo, usedWater })
+        body: JSON.stringify({ subscriptionId, usedWater }) // 📌 Abonelik No gönderiliyor
       });
 
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Fatura oluşturulamadı.");
 
       alert("Fatura başarıyla kesildi! Tutar: " + data.data.totalPrice + " TL");
-      setMeterNo('');
+      setSubscriptionId('');
       setUsedWater('');
     } catch (err) {
       alert(err.message);
@@ -42,10 +39,8 @@ export default function InvoiceCreate() {
   return (
     <div className="min-h-screen bg-slate-100 flex flex-col justify-between">
       <div>
-        {/* Üst Header Alanı */}
         <header className="bg-white border-b border-slate-200 py-4 px-6 shadow-sm">
           <div className="max-w-4xl mx-auto flex justify-between items-center">
-            
             <button 
               onClick={() => navigate('/admin-panel')} 
               className="flex items-center gap-2 text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors bg-slate-50 px-4 py-2 rounded-xl border border-slate-200"
@@ -64,11 +59,9 @@ export default function InvoiceCreate() {
             >
               <Globe size={16} /> Site Ana Sayfa
             </button>
-
           </div>
         </header>
 
-        {/* Ana İçerik Alanı */}
         <div className="max-w-4xl mx-auto px-6 py-12">
           <div className="flex items-center gap-3 mb-8">
             <Receipt className="text-amber-600" size={32} />
@@ -79,12 +72,12 @@ export default function InvoiceCreate() {
             <form onSubmit={handleSubmit} className="flex flex-col gap-6">
               
               <div className="flex flex-col gap-2">
-                <label className="text-sm font-semibold text-slate-700">Sayaç Numarası:</label>
+                <label className="text-sm font-semibold text-slate-700">Abonelik Numarası:</label>
                 <input 
                   type="text" 
-                  value={meterNo} 
-                  onChange={(e) => setMeterNo(e.target.value)} 
-                  placeholder="Örn: 000001" 
+                  value={subscriptionId} 
+                  onChange={(e) => setSubscriptionId(e.target.value)} 
+                  placeholder="Örn: 1000002" 
                   className="px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:border-blue-500 text-slate-800"
                   required 
                 />
@@ -114,7 +107,6 @@ export default function InvoiceCreate() {
         </div>
       </div>
 
-      {/* Alt Footer Alanı */}
       <footer className="bg-white border-t border-slate-200 py-6 text-center text-slate-500 text-sm mt-auto">
         <div className="max-w-4xl mx-auto px-6 flex flex-col sm:flex-row justify-between items-center gap-2">
           <p>© 2026 Tuna Parlak | SASKİ Su Yönetim Sistemi</p>

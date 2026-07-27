@@ -164,8 +164,18 @@ export default function AdminWorkers() {
                             <div className="flex items-center gap-1.5 text-slate-600 text-xs"><Phone size={13} className="text-slate-400" /> {worker.user?.telephone || '-'}</div>
                           </td>
                           <td className="py-4 px-6">
-                            <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold ${worker.role === 'ADMIN' ? 'bg-purple-50 text-purple-700 border border-purple-200' : 'bg-blue-50 text-blue-700 border border-blue-200'}`}>
-                              {worker.role === 'ADMIN' ? <Shield size={12} /> : <UserCheck size={12} />} {worker.role}
+                            <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold ${
+                              worker.role === 'ADMIN' 
+                                ? 'bg-purple-50 text-purple-700 border border-purple-200' 
+                                : worker.role === 'IT'
+                                ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                                : 'bg-blue-50 text-blue-700 border border-blue-200'
+                            }`}>
+                              {worker.role === 'ADMIN' && <Shield size={12} />}
+                              {worker.role === 'IT' && <ShieldCheck size={12} />}
+                              {worker.role === 'WORKER' && <UserCheck size={12} />}
+                              
+                              {worker.role === 'WORKER' ? 'İşçi' : worker.role === 'IT' ? 'IT' : worker.role}
                             </span>
                           </td>
                           <td className="py-4 px-6">
@@ -234,8 +244,8 @@ export default function AdminWorkers() {
                   className="w-full p-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="WORKER">İşçi</option>
+                  <option value="IT">IT</option>
                   <option value="ADMIN">Admin</option>
-                  <option value="PERSONEL">Personel</option>
                 </select>
               </div>
 

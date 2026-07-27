@@ -27,7 +27,7 @@ export default function AdminLogin() {
       }
 
       // 📌 1. JWT Token ve ID'yi kaydediyoruz
-      localStorage.setItem('token', data.token);
+      localStorage.setItem('adminPassword', data.password);
       localStorage.setItem('adminId', adminData.id);
       
       // 📌 2. KRİTİK EKLEME: verifyAdmin kontrolünün geçmesi için düz metin şifreyi de kaydediyoruz!

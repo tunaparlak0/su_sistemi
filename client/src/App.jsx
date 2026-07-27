@@ -13,11 +13,13 @@ import InvoiceCreate from './pages/Admin/InvoiceCreate';
 import AdminUsers from './pages/Admin/AdminUsers';
 import AdminLogs from './pages/Admin/AdminLogs';
 import AdminMeters from './pages/Admin/AdminMeters';
+import About from './pages/About';
 function App() {
   return (
     <Router>
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/about" element={<About />} />
         <Route path="/admin/users" element={<AdminUsers />} />
         <Route path="/admin/logs" element={<AdminLogs />} />
         <Route path="/admin-login" element={<AdminLogin />} />

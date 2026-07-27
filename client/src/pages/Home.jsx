@@ -70,7 +70,7 @@ export default function Home() {
 
             {/* Hakkımızda */}
             <button 
-              onClick={() => navigate('/hakkimizda')}
+              onClick={() => navigate('/about')}
               className="flex items-center gap-6 p-8 bg-white border border-slate-200 rounded-2xl shadow-sm hover:border-blue-300 hover:shadow-md transition-all text-left"
             >
               <div className="p-4 bg-blue-50 rounded-xl shrink-0">
