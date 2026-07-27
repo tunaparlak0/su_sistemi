@@ -1,5 +1,5 @@
 const prisma = require('../config/prisma');
-const { generateWorkerId, generateRandomToken } = require('../utils/idGenerator');
+const { generateWorkerId, generateRandomPassword } = require('../utils/idGenerator');
 
 // Admin yetki kontrolü
 const verifyAdmin = async (adminId, token) => {
@@ -20,6 +20,22 @@ const createWorker = async (adminId, adminPassword, data) => {
 
   if (!name || !surname || !mail) {
     throw new Error("Ad, soyad ve e-posta alanları zorunludur.");
+  }
+
+  // TC Kimlik No Doğrulama (11 hane ve rakam olmalı)
+  if (idNo) {
+    const tcRegex = /^\d{11}$/;
+    if (!tcRegex.test(idNo)) {
+      throw new Error("TC Kimlik Numarası tam 11 haneli ve rakamlardan oluşmalıdır.");
+    }
+  }
+
+  // Telefon Numarası Doğrulama (05 ile başlamalı ve 11 hane olmalı)
+  if (telephone) {
+    const phoneRegex = /^05\d{9}$/;
+    if (!phoneRegex.test(telephone)) {
+      throw new Error("Geçerli bir Türkiye telefon numarası giriniz (Örn: 05540232457).");
+    }
   }
   
   const workerId = generateWorkerId(name, surname, role);
@@ -106,24 +122,5 @@ const updateWorker = async (adminId, adminPassword, targetWorkerId, data) => {
   };
 };
 
-const deleteWorker = async (adminId, adminPassword, targetWorkerId) => {
-  await verifyAdmin(adminId, adminPassword);
 
-  const workerRecord = await prisma.worker.findUnique({
-    where: { id: targetWorkerId }
-  });
-
-  if (!workerRecord) {
-    throw new Error("Personel bulunamadı.");
-  }
-
-  await prisma.worker.delete({
-    where: { id: targetWorkerId }
-  });
-
-  return {
-    message: "Personel başarıyla silindi."
-  };
-};
-
-module.exports = { createWorker, getAllWorkers, updateWorker, deleteWorker };
+module.exports = { createWorker, getAllWorkers, updateWorker };

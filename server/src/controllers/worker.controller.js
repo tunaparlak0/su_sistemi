@@ -53,20 +53,5 @@ const updateWorker = async (req, reply) => {
   }
 };
 
-const deleteWorker = async (req, reply) => {
-  try {
-    const adminPassword = req.headers['x-admin-password'];
-    const adminId = req.headers['x-admin-id'];
 
-    if (!adminId || !adminPassword) {
-      return reply.code(401).send({ error: "Admin kimlik bilgileri eksik." });
-    }
-
-    const result = await workerService.deleteWorker(adminId, adminPassword, req.params.id);
-    return reply.code(200).send(result);
-  } catch (error) {
-    return reply.code(400).send({ error: error.message });
-  }
-};
-
-module.exports = { createWorker, getAllWorkers, updateWorker, deleteWorker };
+module.exports = { createWorker, getAllWorkers, updateWorker};

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Users, ShieldCheck, Home, ArrowLeft, Mail, Phone, UserCheck, Shield, X, Trash2, Check } from 'lucide-react';
-import { getWorkersApi, updateWorkerApi, deleteWorkerApi } from '../../services/api';
+import { Users, ShieldCheck, Home, ArrowLeft, Mail, Phone, UserCheck, Shield, X, Check } from 'lucide-react';
+import { getWorkersApi, updateWorkerApi } from '../../services/api';
 
 export default function AdminWorkers() {
   const [workers, setWorkers] = useState([]);
@@ -70,19 +70,6 @@ export default function AdminWorkers() {
     try {
       await updateWorkerApi(selectedWorker.id, editFormData);
       alert("Personel başarıyla güncellendi.");
-      setIsEditing(false);
-      fetchWorkersList();
-    } catch (err) {
-      alert(err.message);
-    }
-  };
-
-  const handleDeleteWorker = async (workerId) => {
-    if (!window.confirm("Bu personeli silmek istediğinize emin misiniz?")) return;
-
-    try {
-      await deleteWorkerApi(workerId);
-      alert("Personel silindi.");
       setIsEditing(false);
       fetchWorkersList();
     } catch (err) {
@@ -246,8 +233,9 @@ export default function AdminWorkers() {
                   onChange={(e) => setEditFormData({ ...editFormData, role: e.target.value })}
                   className="w-full p-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500"
                 >
-                  <option value="WORKER">Personel</option>
+                  <option value="WORKER">İşçi</option>
                   <option value="ADMIN">Admin</option>
+                  <option value="PERSONEL">Personel</option>
                 </select>
               </div>
 
@@ -263,19 +251,12 @@ export default function AdminWorkers() {
                 </select>
               </div>
 
-              <div className="flex gap-3 mt-4">
+              <div className="mt-4">
                 <button
                   type="submit"
-                  className="flex-1 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-bold shadow-sm transition-colors flex items-center justify-center gap-2"
+                  className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-bold shadow-sm transition-colors flex items-center justify-center gap-2"
                 >
                   <Check size={16} /> Kaydet
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleDeleteWorker(selectedWorker.id)}
-                  className="px-4 py-3 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl text-sm font-bold transition-colors flex items-center justify-center gap-2 border border-red-200"
-                >
-                  <Trash2 size={16} /> Sil
                 </button>
               </div>
             </form>

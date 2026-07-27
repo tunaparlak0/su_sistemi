@@ -1,9 +1,13 @@
 const API_URL = "http://localhost:3000";
 
-const getHeaders = () => {
-  const headers = { 'Content-Type': 'application/json' };
+const getHeaders = (hasBody = false) => {
+  const headers = {};
+  if (hasBody) {
+    headers['Content-Type'] = 'application/json';
+  }
+  
   const adminId = localStorage.getItem('adminId');
-  const adminPassword = localStorage.getItem('adminPassword'); // 📌 Artık doğru düz metin şifreyi gönderiyoruz
+  const adminPassword = localStorage.getItem('adminPassword');
 
   if (adminId && adminPassword) {
     headers['x-admin-id'] = adminId;
@@ -24,7 +28,7 @@ export const postSubscription = async (data) => {
 export const getAdminDashboard = async () => {
   const response = await fetch(`${API_URL}/admin/dashboard`, {
     method: 'GET',
-    headers: getHeaders(),
+    headers: getHeaders(false), // Gövde yok
   });
   return response.json();
 };
@@ -32,7 +36,7 @@ export const getAdminDashboard = async () => {
 export const createWorkerApi = async (formData) => {
   const response = await fetch(`${API_URL}/workers`, {
     method: 'POST',
-    headers: getHeaders(),
+    headers: getHeaders(true), // Gövde var
     body: JSON.stringify(formData),
   });
   
@@ -43,11 +47,10 @@ export const createWorkerApi = async (formData) => {
   return result;
 };
 
-// Personelleri getirme, güncelleme ve silme fonksiyonlarını da api.js'e ekleyelim:
 export const getWorkersApi = async () => {
   const response = await fetch(`${API_URL}/workers`, {
     method: 'GET',
-    headers: getHeaders(),
+    headers: getHeaders(false), // Gövde yok
   });
   const result = await response.json();
   if (!response.ok) throw new Error(result.error || "Personel listesi alınamadı.");
@@ -57,7 +60,7 @@ export const getWorkersApi = async () => {
 export const updateWorkerApi = async (workerId, editFormData) => {
   const response = await fetch(`${API_URL}/workers/${workerId}`, {
     method: 'PUT',
-    headers: getHeaders(),
+    headers: getHeaders(true), // Gövde var
     body: JSON.stringify(editFormData),
   });
   const result = await response.json();
@@ -65,12 +68,3 @@ export const updateWorkerApi = async (workerId, editFormData) => {
   return result;
 };
 
-export const deleteWorkerApi = async (workerId) => {
-  const response = await fetch(`${API_URL}/workers/${workerId}`, {
-    method: 'DELETE',
-    headers: getHeaders(),
-  });
-  const result = await response.json();
-  if (!response.ok) throw new Error(result.error || "Silme işlemi başarısız.");
-  return result;
-};

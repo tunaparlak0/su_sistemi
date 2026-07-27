@@ -20,16 +20,39 @@ export default function AdminCreate() {
     e.preventDefault();
     setMessage('');
 
+    // 1. TC Kimlik No Doğrulama (11 hane ve rakam olmalı)
+    if (formData.idNo) {
+      const tcRegex = /^\d{11}$/;
+      if (!tcRegex.test(formData.idNo)) {
+        setMessage("TC Kimlik Numarası tam 11 haneli ve rakamlardan oluşmalıdır.");
+        return;
+      }
+    }
+
+    // 2. Telefon Numarası Doğrulama (Türkiye formatı: 05 ile başlamalı ve 11 hane olmalı)
+    if (formData.telephone) {
+      const phoneRegex = /^05\d{9}$/;
+      if (!phoneRegex.test(formData.telephone)) {
+        setMessage("Geçerli bir Türkiye telefon numarası giriniz (Örn: 05540232457).");
+        return;
+      }
+    }
+
+    // 3. E-posta Formatı Doğrulama
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.mail)) {
+      setMessage("Lütfen geçerli bir e-posta adresi giriniz.");
+      return;
+    }
+
     try {
       const result = await createWorkerApi(formData);
-      console.log("Backend Yanıtı:", result);
-
       const responseData = result.data || result;
       const workerId = responseData.generatedCredentials?.workerId || responseData.worker?.id;
-      const token = responseData.generatedCredentials?.token || responseData.worker?.token;
+const password = responseData.generatedCredentials?.password || responseData.worker?.password; // 📌 'token' yerine 'password' yaptık
 
-      alert(`Personel başarıyla oluşturuldu!\n\nID: ${workerId}\nŞifre (Token): ${token}\nRol: ${formData.role}`);
-      navigate('/admin-panel');
+alert(`Personel başarıyla oluşturuldu!\n\nID: ${workerId}\nŞifre (Token): ${password}\nRol: ${formData.role}`);
+navigate('/admin-panel');
     } catch (err) {
       setMessage(err.message || "Sunucuya bağlanılamadı.");
     }
@@ -90,17 +113,19 @@ export default function AdminCreate() {
                 required 
               />
               <input 
-                placeholder="Telefon" 
+                placeholder="Telefon (05XXXXXXXXX)" 
+                maxLength={11}
                 className="p-3 bg-slate-50 border border-slate-200 rounded-lg w-full outline-none focus:ring-2 focus:ring-blue-500" 
                 onChange={(e) => setFormData({...formData, telephone: e.target.value})} 
+                required
               />
               
-              {/* TC Kimlik Numarası Alanı */}
               <input 
-                placeholder="TC Kimlik Numarası (ID No)" 
+                placeholder="TC Kimlik Numarası (11 hane)" 
                 maxLength={11}
                 className="p-3 bg-slate-50 border border-slate-200 rounded-lg w-full outline-none focus:ring-2 focus:ring-blue-500" 
                 onChange={(e) => setFormData({...formData, idNo: e.target.value})} 
+                required
               />
 
               <select 

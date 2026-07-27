@@ -1,22 +1,8 @@
-const prisma = require('../config/prisma');
+const userController = require('../controllers/user.controller');
 
 async function userRoutes(fastify, options) {
-  // Tüm kullanıcıları ve aboneliklerini listeleme
-  fastify.get('/', async (req, reply) => {
-    try {
-      const users = await prisma.user.findMany({
-        include: {
-          subscription: {
-            include: { meter: true }
-          }
-        },
-        orderBy: { name: 'asc' }
-      });
-      return reply.code(200).send(users);
-    } catch (error) {
-      return reply.code(500).send({ error: error.message });
-    }
-  });
+  // Tüm kullanıcıları ve aboneliklerini listeleme (Controller üzerinden çalışır)
+  fastify.get('/', userController.getUsers);
 }
 
 module.exports = userRoutes;
