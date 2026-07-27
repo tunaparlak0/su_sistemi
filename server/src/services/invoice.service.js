@@ -108,7 +108,7 @@ const payInvoice = async (invoiceId) => {
     throw new Error("Fatura bulunamadı.");
   }
 
-  // 📌 Eğer fatura zaten ödenmişse tekrar ödemeye çalışmasın
+  // Eğer fatura zaten ödenmişse tekrar ödemeye çalışmasın
   if (invoice.isPaid) {
     throw new Error("Bu fatura zaten daha önce ödenmiştir.");
   }

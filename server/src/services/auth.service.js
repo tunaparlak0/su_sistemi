@@ -12,8 +12,6 @@ const adminLogin = async (id, password, fastify) => {
   if (worker.status !== 'ACTIVE') {
     throw new Error("Hesap aktif değil!");
   }
-
-  // 📌 Artık fastify nesnesi buraya güvenle geliyor ve JWT üretebiliyor
   const jwtToken = fastify.jwt.sign({ 
     id: worker.id, 
     role: worker.role 

@@ -28,7 +28,7 @@ const payInvoice = async (req, reply) => {
 
 const createInvoice = async (req, reply) => {
   try {
-    const { subscriptionId, usedWater } = req.body; // 📌 meterNo yerine subscriptionId alındı
+    const { subscriptionId, usedWater } = req.body; 
     const workerId = req.user.id; 
 
     const invoice = await invoiceService.createInvoice({ subscriptionId, usedWater }, workerId);

@@ -8,7 +8,7 @@ const applySubscription = async (data) => {
     throw new Error("Ad, soyad, e-posta, telefon ve abonelik numarası zorunludur.");
   }
 
-  // 2. TC veya Vergi No Zorunluluğu (En biri zorunlu)
+  // 2. TC veya Vergi No Zorunluluğu (biri zorunlu)
   if (!idNo && !taxNo) {
     throw new Error("Lütfen TC Kimlik Numarası veya Vergi Numarasından en az birini giriniz.");
   }
@@ -29,7 +29,7 @@ const applySubscription = async (data) => {
     }
   }
 
-  // 5. Telefon Numarası Doğrulama (Türkiye formatı: 05 ile başlamalı ve 11 hane olmalı)
+  // 5. Telefon Numarası Doğrulama (05 ile başlamalı ve 11 hane olmalı)
   const phoneRegex = /^05\d{9}$/;
   if (!phoneRegex.test(telephone)) {
     throw new Error("Geçerli bir Türkiye telefon numarası giriniz (Örn: 05540232457).");
@@ -57,7 +57,7 @@ const applySubscription = async (data) => {
       mail,
       telephone,
       idNo,
-      taxNo, // Vergi no alanını da veritabanına kaydediyoruz
+      taxNo, 
       subscriptionId: subscriptionId
     }
   });
