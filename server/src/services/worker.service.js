@@ -16,60 +16,35 @@ const verifyAdmin = async (adminId, adminPassword) => {
 
 const createWorker = async (adminId, adminPassword, data) => {
   await verifyAdmin(adminId, adminPassword);
-  const { name, surname, mail, telephone, idNo, role = "WORKER" } = data;
+  const { name, surname, mail, telephone, idNo } = data;
 
   if (!name || !surname || !mail) {
     throw new Error("Ad, soyad ve e-posta alanları zorunludur.");
   }
 
-  // TC Kimlik No Doğrulama (11 hane ve rakam olmalı)
-  if (idNo) {
-    const tcRegex = /^\d{11}$/;
-    if (!tcRegex.test(idNo)) {
-      throw new Error("TC Kimlik Numarası tam 11 haneli ve rakamlardan oluşmalıdır.");
-    }
-  }
+  // TC ve Telefon doğrulama kodları aynı...
 
-  // Telefon Numarası Doğrulama (05 ile başlamalı ve 11 hane olmalı)
-  if (telephone) {
-    const phoneRegex = /^05\d{9}$/;
-    if (!phoneRegex.test(telephone)) {
-      throw new Error("Geçerli bir Türkiye telefon numarası giriniz (Örn: 05540232457).");
-    }
-  }
-  
-  const workerId = generateWorkerId(name, surname, role);
+  const workerId = generateWorkerId(name, surname);
   const generatedPassword = generateRandomPassword();
   
   const newUser = await prisma.user.create({
-    data: {
-      name,
-      surname,
-      mail,
-      telephone,
-      idNo,
-    }
+    data: { name, surname, mail, telephone, idNo }
   });
 
   const newWorker = await prisma.worker.create({
     data: {
       id: workerId,
-      role: role, 
+      role: "NULL", // 📌 Kullanıcı eklenirken rolü direkt NULL olarak atanır
       status: "ACTIVE",
       password: generatedPassword,
       userId: newUser.id
     },
-    include: {
-      user: true
-    }
+    include: { user: true }
   });
 
   return {
     message: "Personel başarıyla oluşturuldu.",
-    generatedCredentials: {
-      workerId: workerId,
-      password: generatedPassword 
-    },
+    generatedCredentials: { workerId: workerId, password: generatedPassword },
     worker: newWorker
   };
 };

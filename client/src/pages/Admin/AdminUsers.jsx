@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { UserCheck, ShieldCheck, Home, ArrowLeft, Mail, Phone  } from 'lucide-react';
+import { UserCheck, ShieldCheck, Home, ArrowLeft, Mail, Phone } from 'lucide-react';
 
 export default function AdminUsers() {
   const [users, setUsers] = useState([]);
@@ -85,7 +85,7 @@ export default function AdminUsers() {
                       <th className="py-4 px-6">Ad Soyad</th>
                       <th className="py-4 px-6">İletişim</th>
                       <th className="py-4 px-6">TC / Vergi No</th>
-                      <th className="py-4 px-6">Abonelik ID</th>
+                      <th className="py-4 px-6">Abonelik Bilgisi</th>
                       <th className="py-4 px-6">Sayaç No</th>
                     </tr>
                   </thead>
@@ -103,7 +103,33 @@ export default function AdminUsers() {
                             <div className="flex items-center gap-1.5 text-slate-600 text-xs"><Phone size={13} className="text-slate-400" /> {u.telephone || '-'}</div>
                           </td>
                           <td className="py-4 px-6 font-mono text-xs text-slate-600">{u.idNo || u.taxNo || '-'}</td>
-                          <td className="py-4 px-6 font-mono text-xs text-blue-600 font-semibold">{u.subscriptionId || 'Abone Değil'}</td>
+                          
+                          {/* 📌 Abonelik ID ve Durum Rozeti */}
+                          <td className="py-4 px-6">
+                            {u.subscription ? (
+                              <div className="flex flex-col gap-1">
+                                <span className="font-mono text-xs text-blue-600 font-semibold">{u.subscription.id}</span>
+                                {u.subscription.status === 'ACTIVE' && (
+                                  <span className="w-fit px-2 py-0.5 rounded-full text-[10px] font-bold bg-green-100 text-green-700">
+                                    Aktif
+                                  </span>
+                                )}
+                                {u.subscription.status === 'PENDING' && (
+                                  <span className="w-fit px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-700">
+                                    Onay Bekliyor
+                                  </span>
+                                )}
+                                {(!u.subscription.status || u.subscription.status === 'NULL') && (
+                                  <span className="w-fit px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-600">
+                                    -
+                                  </span>
+                                )}
+                              </div>
+                            ) : (
+                              <span className="text-xs text-slate-400">Abone Değil</span>
+                            )}
+                          </td>
+
                           <td className="py-4 px-6 font-mono text-xs text-slate-600">{u.subscription?.meterId || '-'}</td>
                         </tr>
                       ))

@@ -9,7 +9,7 @@ datasource db {
 
 model Subscription {
   id             String    @id // idGenerator ile kendin vereceksin (örn: sub_xxxx)
-  status         String    @default("NULL") // NULL, PENDING , ACTIVE
+  status         String    @default("NULL") // NULL, PENDING , ACTIVE , PASSIVE
   startDate      DateTime?  @default(now())
   meterId        String?
   meter          Meter?     @relation(fields: [meterId], references: [meterNo])
@@ -48,7 +48,7 @@ model Invoice {
 }
 model Worker {
   id        String   @unique
-  role      String   @default("WORKER") // ADMIN, WORKER, IT
+  role      String   @default("WORKER") // ADMIN, WORKER, IT, NULL, SUPERADMIN
   status    String   @default("ACTIVE") //ACTIVE veya PASSIVE
   password  String   
   user      User     @relation(fields: [userId], references: [id])

@@ -3,17 +3,15 @@ const prisma = require('../config/prisma');
 const applySubscription = async (data) => {
   const { name, surname, mail, telephone, idNo, taxNo, subscriptionId } = data;
 
-  // 1. Zorunlu alanların kontrolü
   if (!name || !surname || !mail || !telephone || !subscriptionId) {
     throw new Error("Ad, soyad, e-posta, telefon ve abonelik numarası zorunludur.");
   }
 
-  // 2. TC veya Vergi No Zorunluluğu (biri zorunlu)
+  // TC veya Vergi No kontrolü
   if (!idNo && !taxNo) {
     throw new Error("Lütfen TC Kimlik Numarası veya Vergi Numarasından en az birini giriniz.");
   }
 
-  // 3. TC Kimlik No Doğrulama (11 hane ve rakam olmalı)
   if (idNo) {
     const tcRegex = /^\d{11}$/;
     if (!tcRegex.test(idNo)) {
@@ -21,7 +19,6 @@ const applySubscription = async (data) => {
     }
   }
 
-  // 4. Vergi No Doğrulama (12 hane ve rakam olmalı)
   if (taxNo) {
     const taxRegex = /^\d{12}$/;
     if (!taxRegex.test(taxNo)) {
@@ -29,19 +26,16 @@ const applySubscription = async (data) => {
     }
   }
 
-  // 5. Telefon Numarası Doğrulama (05 ile başlamalı ve 11 hane olmalı)
   const phoneRegex = /^05\d{9}$/;
   if (!phoneRegex.test(telephone)) {
-    throw new Error("Geçerli bir Türkiye telefon numarası giriniz (Örn: 05540232457).");
+    throw new Error("Geçerli bir Türkiye telefon numarası giriniz.");
   }
 
-  // 6. E-posta Formatı Doğrulama
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailRegex.test(mail)) {
     throw new Error("Lütfen geçerli bir e-posta adresi giriniz.");
   }
 
-  // Abonelik var mı kontrolü
   const existingSub = await prisma.subscription.findUnique({
     where: { id: subscriptionId }
   });
@@ -50,14 +44,15 @@ const applySubscription = async (data) => {
     throw new Error("Girilen abonelik numarası bulunamadı.");
   }
 
+  // 📌 Kullanıcıyı oluştururken idNo ve taxNo değerlerini güvenli ekliyoruz
   const newUser = await prisma.user.create({
     data: {
       name,
       surname,
       mail,
       telephone,
-      idNo,
-      taxNo, 
+      idNo: idNo ? idNo : null,
+      taxNo: taxNo ? taxNo : null, 
       subscriptionId: subscriptionId
     }
   });

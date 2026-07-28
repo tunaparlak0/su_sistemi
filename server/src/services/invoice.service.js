@@ -35,6 +35,7 @@ const getInvoiceById = async (invoiceId) => {
 
   return invoice;
 };
+
 const createInvoice = async (data, workerId) => {
   const { subscriptionId, usedWater } = data;
 
@@ -57,7 +58,7 @@ const createInvoice = async (data, workerId) => {
   // 2. Tarife tipine göre birim fiyat ve vergi belirle (EV, KOY, KURUMSAL)
   let unitPrice = 10; 
   let taxRate = 0.10; 
-
+//"1205" 1205
   if (meter && meter.type === "KOY") {
     unitPrice = 5;    
     taxRate = 0.05;

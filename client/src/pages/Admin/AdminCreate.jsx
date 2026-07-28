@@ -9,8 +9,8 @@ export default function AdminCreate() {
     surname: '', 
     mail: '', 
     telephone: '', 
-    idNo: '', 
-    role: 'WORKER' 
+    idNo: ''
+    // 📌 'role' alanını buradan kaldırdık
   });
   
   const [message, setMessage] = useState('');
@@ -20,7 +20,6 @@ export default function AdminCreate() {
     e.preventDefault();
     setMessage('');
 
-    // 1. TC Kimlik No Doğrulama (11 hane ve rakam olmalı)
     if (formData.idNo) {
       const tcRegex = /^\d{11}$/;
       if (!tcRegex.test(formData.idNo)) {
@@ -29,7 +28,6 @@ export default function AdminCreate() {
       }
     }
 
-    // 2. Telefon Numarası Doğrulama (Türkiye formatı: 05 ile başlamalı ve 11 hane olmalı)
     if (formData.telephone) {
       const phoneRegex = /^05\d{9}$/;
       if (!phoneRegex.test(formData.telephone)) {
@@ -38,7 +36,6 @@ export default function AdminCreate() {
       }
     }
 
-    // 3. E-posta Formatı Doğrulama
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.mail)) {
       setMessage("Lütfen geçerli bir e-posta adresi giriniz.");
@@ -49,10 +46,10 @@ export default function AdminCreate() {
       const result = await createWorkerApi(formData);
       const responseData = result.data || result;
       const workerId = responseData.generatedCredentials?.workerId || responseData.worker?.id;
-const password = responseData.generatedCredentials?.password || responseData.worker?.password; // 📌 'token' yerine 'password' yaptık
+      const password = responseData.generatedCredentials?.password || responseData.worker?.password;
 
-alert(`Personel başarıyla oluşturuldu!\n\nID: ${workerId}\nŞifre (Token): ${password}\nRol: ${formData.role}`);
-navigate('/admin-panel');
+      alert(`Personel başarıyla oluşturuldu!\n\nID: ${workerId}\nŞifre: ${password}\nRol: Rol Atanmadı (NULL)`);
+      navigate('/admin-panel');
     } catch (err) {
       setMessage(err.message || "Sunucuya bağlanılamadı.");
     }
@@ -119,7 +116,6 @@ navigate('/admin-panel');
                 onChange={(e) => setFormData({...formData, telephone: e.target.value})} 
                 required
               />
-              
               <input 
                 placeholder="TC Kimlik Numarası (11 hane)" 
                 maxLength={11}
@@ -128,14 +124,7 @@ navigate('/admin-panel');
                 required
               />
 
-              <select 
-                className="p-3 bg-slate-50 border border-slate-200 rounded-lg w-full outline-none focus:ring-2 focus:ring-blue-500" 
-                value={formData.role}
-                onChange={(e) => setFormData({...formData, role: e.target.value})}
-              >
-                <option value="WORKER">Personel</option>
-                <option value="ADMIN">Admin</option>
-              </select>
+              {/* 📌 Rol seçme select kutusu buradan kaldırıldı. */}
 
               <button type="submit" className="w-full mt-4 p-4 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 transition-colors shadow-md">
                 Oluştur

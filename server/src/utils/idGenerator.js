@@ -7,8 +7,22 @@ const generateSubscriptionId = (number) => {
     return String(number);
 };
 const generateWorkerId = (name, surname) => {
-  const firstInitial = name ? name.trim().charAt(0).toUpperCase() : 'W';
-  const lastInitial = surname ? surname.trim().charAt(0).toUpperCase() : 'K';
+  // 📌 Türkçe karakterleri İngilizce karşılıklarına dönüştüren yardımcı fonksiyon
+  const removeTurkishChars = (str) => {
+    if (!str) return '';
+    return str
+      .trim()
+      .normalize("NFD") // Harfler ile aksanlarını ayırır (Örn: ş -> s + çengel)
+      .replace(/[\u0300-\u036f]/g, "") // Aksan işaretlerini siler
+      .replace(/ı/g, 'i') // Küçük ı
+      .replace(/İ/g, 'I'); // Büyük İ
+  };
+
+  const cleanName = removeTurkishChars(name);
+  const cleanSurname = removeTurkishChars(surname);
+
+  const firstInitial = cleanName ? cleanName.charAt(0).toUpperCase() : 'W';
+  const lastInitial = cleanSurname ? cleanSurname.charAt(0).toUpperCase() : 'K';
   const randomDigits = Math.floor(1000 + Math.random() * 9000); // 4 basamaklı rastgele sayı
   
   return `${firstInitial}${lastInitial}${randomDigits}`;

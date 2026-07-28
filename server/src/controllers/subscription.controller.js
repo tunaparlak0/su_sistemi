@@ -2,7 +2,8 @@ const subscriptionService = require('../services/subscription.service');
 
 const applySubscription = async (req, reply) => {
   try {
-    const { name, surname, mail, telephone, idNo, subscriptionId } = req.body;
+    // 📌 taxNo ve meterType alanları da destructuring ile eklendi
+    const { name, surname, mail, telephone, idNo, taxNo, subscriptionId, meterType } = req.body;
 
     if (!name || !surname || !subscriptionId) {
       return reply.code(400).send({ error: "Ad, soyad ve abonelik numarası zorunludur." });
@@ -14,7 +15,9 @@ const applySubscription = async (req, reply) => {
       mail,
       telephone,
       idNo,
-      subscriptionId
+      taxNo, // 📌 Servise eksiksiz gönderiliyor
+      subscriptionId,
+      meterType
     });
 
     return reply.code(201).send({
@@ -37,7 +40,7 @@ const getAllSubscriptions = async (req, reply) => {
 
 const approveSubscription = async (req, reply) => {
   try {
-    const { id } = req.params; // URL'den gelen id (örn: 1000001)
+    const { id } = req.params;
 
     if (!id) {
       return reply.code(400).send({ error: "Abonelik ID parametresi eksik." });
