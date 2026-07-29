@@ -10,9 +10,10 @@ datasource db {
 model Subscription {
   id             String    @id // idGenerator ile kendin vereceksin (örn: sub_xxxx)
   status         String    @default("NULL") // NULL, PENDING , ACTIVE , PASSIVE
-  startDate      DateTime?  @default(now())
+  startDate      DateTime? @default(now())
+  type           String?    // "EV" , "KOY" , "KURUMSAL"
   meterId        String?
-  meter          Meter?     @relation(fields: [meterId], references: [meterNo])
+  meter          Meter?    @relation(fields: [meterId], references: [meterNo])
   owners         User[]    
   invoices       Invoice[]
   logs           SubscriptionLog[]
@@ -79,7 +80,6 @@ model SubscriptionLog {
 model Meter {
   meterNo        String            @id  //abone nosu gibi bir şey olucak
   address        String
-  type           String            @default("EV") // "EV" , "KOY" , "KURUMSAL"
   subscriptions  Subscription[]    
   logs           SubscriptionLog[]
 }

@@ -53,21 +53,22 @@ const createInvoice = async (data, workerId) => {
     throw new Error("Bu abonelik aktif durumda değil.");
   }
 
-  const meter = subscription.meter;
+  // 📌 2. Tarife tipini önce aboneliğin kendi 'type' alanından, yoksa bağlı olduğu sayacın 'type' alanından alıyoruz
+  const tariffType = subscription.type || subscription.meter?.type || "EV";
 
-  // 2. Tarife tipine göre birim fiyat ve vergi belirle (EV, KOY, KURUMSAL)
+  // 3. Tarife tipine göre birim fiyat ve vergi belirle (EV, KOY, KURUMSAL)
   let unitPrice = 10; 
   let taxRate = 0.10; 
-//"1205" 1205
-  if (meter && meter.type === "KOY") {
-    unitPrice = 5;    
+
+  if (tariffType === "KOY") {
+    unitPrice = 5;     
     taxRate = 0.05;
-  } else if (meter && meter.type === "KURUMSAL") {
+  } else if (tariffType === "KURUMSAL") {
     unitPrice = 20;   
     taxRate = 0.18;
   }
 
-  // 3. Fiyat Hesaplama
+  // 4. Fiyat Hesaplama
   const waterAmount = parseFloat(usedWater);
   const subTotal = waterAmount * unitPrice;
   const taxAmount = subTotal * taxRate;
@@ -76,7 +77,7 @@ const createInvoice = async (data, workerId) => {
   const dueDate = new Date();
   dueDate.setDate(dueDate.getDate() + 15);
 
-  // 4. Faturayı Kaydet
+  // 5. Faturayı Kaydet
   const newInvoice = await prisma.invoice.create({
     data: {
       usedWater: waterAmount,
@@ -88,7 +89,7 @@ const createInvoice = async (data, workerId) => {
     }
   });
 
-  // 5. WorkerLog Kaydı At
+  // 6. WorkerLog Kaydı At
   await prisma.workerLog.create({
     data: {
       action: "CREATE_INVOICE",

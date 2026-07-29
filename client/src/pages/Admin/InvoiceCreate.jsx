@@ -1,38 +1,27 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ShieldCheck, Home, Globe, Receipt } from 'lucide-react';
+import { createInvoiceApi } from '../../services/api'; // 📌 api.js'den import ediyoruz
 
 export default function InvoiceCreate() {
   const navigate = useNavigate();
-  const [subscriptionId, setSubscriptionId] = useState(''); // 📌 Abonelik No state'i
+  const [subscriptionId, setSubscriptionId] = useState('');
   const [usedWater, setUsedWater] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const token = localStorage.getItem('token') || localStorage.getItem('adminToken');
+      const result = await createInvoiceApi({ subscriptionId, usedWater });
+
+      const responseData = result.data || result;
+      alert("Fatura başarıyla kesildi! Tutar: " + responseData.totalPrice + " TL");
       
-      if (!token) {
-        throw new Error("Oturum açma bilgisi bulunamadı. Lütfen tekrar giriş yapın.");
-      }
-
-      const res = await fetch('http://localhost:3000/invoices', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ subscriptionId, usedWater }) // 📌 Abonelik No gönderiliyor
-      });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Fatura oluşturulamadı.");
-
-      alert("Fatura başarıyla kesildi! Tutar: " + data.data.totalPrice + " TL");
       setSubscriptionId('');
       setUsedWater('');
     } catch (err) {
-      alert(err.message);
+      // 📌 F12 -> Console sekmesinde hatanın detayını görebilmek için:
+      console.error("Frontend Fatura Hatası:", err);
+      alert("Hata Detayı: " + err.message);
     }
   };
 

@@ -1,8 +1,8 @@
 const userController = require('../controllers/user.controller');
+const adminAuth = require('../middlewares/adminAuth');
 
 async function userRoutes(fastify, options) {
-  // Tüm kullanıcıları ve aboneliklerini listeleme (Controller üzerinden çalışır)
-  fastify.get('/', userController.getUsers);
+  fastify.get('/', { preHandler: [adminAuth(['SUPERADMIN', 'ADMIN', 'IT'])] }, userController.getUsers);
 }
 
 module.exports = userRoutes;

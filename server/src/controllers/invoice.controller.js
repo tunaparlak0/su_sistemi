@@ -9,7 +9,6 @@ const getInvoices = async (req, reply) => {
     }
 
     const invoices = await invoiceService.getInvoicesBySubscriptionId(subscriptionId);
-
     return reply.code(200).send(invoices);
   } catch (error) {
     return reply.code(500).send({ error: error.message });
@@ -29,7 +28,13 @@ const payInvoice = async (req, reply) => {
 const createInvoice = async (req, reply) => {
   try {
     const { subscriptionId, usedWater } = req.body; 
-    const workerId = req.user.id; 
+    
+    // 📌 Artık JWT token kullanıyoruz. req.user içeriği adminAuth middleware'inden geliyor!
+    const workerId = req.user?.id;
+
+    if (!workerId) {
+      return reply.code(401).send({ error: "Oturum bilgisi bulunamadı." });
+    }
 
     const invoice = await invoiceService.createInvoice({ subscriptionId, usedWater }, workerId);
 
@@ -42,6 +47,7 @@ const createInvoice = async (req, reply) => {
     return reply.code(400).send({ error: error.message });
   }
 };
+
 const getInvoiceById = async (req, reply) => {
   try {
     const { id } = req.params;
@@ -51,4 +57,5 @@ const getInvoiceById = async (req, reply) => {
     return reply.code(404).send({ error: error.message });
   }
 };
+
 module.exports = { getInvoices, createInvoice, payInvoice, getInvoiceById };

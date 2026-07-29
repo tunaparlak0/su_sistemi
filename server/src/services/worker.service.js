@@ -1,28 +1,12 @@
 const prisma = require('../config/prisma');
 const { generateWorkerId, generateRandomPassword } = require('../utils/idGenerator');
 
-// Admin yetki kontrolü
-const verifyAdmin = async (adminId, adminPassword) => {
-  const workerRecord = await prisma.worker.findUnique({
-    where: { id: adminId }, 
-    include: { user: true }
-  });
-
-  if (!workerRecord || workerRecord.role !== 'ADMIN' || workerRecord.password !== adminPassword) {
-    throw new Error("Admin yetkisi gerekiyor!");
-  }
-  return true;
-};
-
-const createWorker = async (adminId, adminPassword, data) => {
-  await verifyAdmin(adminId, adminPassword);
+const createWorker = async (data) => {
   const { name, surname, mail, telephone, idNo } = data;
 
   if (!name || !surname || !mail) {
     throw new Error("Ad, soyad ve e-posta alanları zorunludur.");
   }
-
-  // TC ve Telefon doğrulama kodları aynı...
 
   const workerId = generateWorkerId(name, surname);
   const generatedPassword = generateRandomPassword();
@@ -34,7 +18,7 @@ const createWorker = async (adminId, adminPassword, data) => {
   const newWorker = await prisma.worker.create({
     data: {
       id: workerId,
-      role: "NULL", // 📌 Kullanıcı eklenirken rolü direkt NULL olarak atanır
+      role: "NULL", 
       status: "ACTIVE",
       password: generatedPassword,
       userId: newUser.id
@@ -49,9 +33,7 @@ const createWorker = async (adminId, adminPassword, data) => {
   };
 };
 
-const getAllWorkers = async (adminId, adminPassword) => {
-  await verifyAdmin(adminId, adminPassword);
-
+const getAllWorkers = async () => {
   return await prisma.worker.findMany({
     include: {
       user: true
@@ -59,8 +41,7 @@ const getAllWorkers = async (adminId, adminPassword) => {
   });
 };
 
-const updateWorker = async (adminId, adminPassword, targetWorkerId, data) => {
-  await verifyAdmin(adminId, adminPassword);
+const updateWorker = async (targetWorkerId, data) => {
   const { role, status, telephone, mail } = data;
 
   const workerRecord = await prisma.worker.findUnique({
@@ -96,6 +77,5 @@ const updateWorker = async (adminId, adminPassword, targetWorkerId, data) => {
     worker: updatedWorker
   };
 };
-
 
 module.exports = { createWorker, getAllWorkers, updateWorker };

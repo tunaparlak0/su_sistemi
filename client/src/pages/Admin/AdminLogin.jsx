@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { adminLoginApi } from '../../services/api'; // api.js üzerinden çağrı
 
 export default function AdminLogin() {
   const [adminData, setAdminData] = useState({ id: '', password: '' });
@@ -11,32 +12,15 @@ export default function AdminLogin() {
     setErrorMessage('');
 
     try {
-      const response = await fetch('http://localhost:3000/admin-login-secret', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(adminData),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        setErrorMessage(data.message || "Giriş başarısız!");
-        return;
-      }
-
-      // 📌 1. JWT Token ve ID'yi kaydediyoruz
-      localStorage.setItem('adminPassword', data.password);
-      localStorage.setItem('adminId', adminData.id);
+      // api.js'deki fonksiyonu kullanıyoruz
+      await adminLoginApi(adminData);
       
-      // 📌 2. KRİTİK EKLEME: verifyAdmin kontrolünün geçmesi için düz metin şifreyi de kaydediyoruz!
-      localStorage.setItem('adminPassword', adminData.password);
-      
+      // Artık localStorage'da şifreler (adminPassword) DEĞİL, 
+      // sadece yetkilendirme için JWT token ve userRole saklanıyor.
       navigate('/admin-panel');
 
-    } catch {
-      setErrorMessage("Sunucuya ulaşılamıyor, bağlantı hatası.");
+    } catch (err) {
+      setErrorMessage(err.message || "Sunucuya ulaşılamıyor, bağlantı hatası.");
     }
   };
 
@@ -61,7 +45,7 @@ export default function AdminLogin() {
         
         <input 
           type="password" 
-          placeholder="Token (Şifre)" 
+          placeholder="Şifre" 
           className="p-3 border rounded w-full outline-none focus:ring-2 focus:ring-blue-500" 
           value={adminData.password}
           onChange={(e) => setAdminData({...adminData, password: e.target.value})} 
