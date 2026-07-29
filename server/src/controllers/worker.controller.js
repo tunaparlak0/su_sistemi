@@ -2,8 +2,8 @@ const workerService = require('../services/worker.service');
 
 const createWorker = async (req, reply) => {
   try {
-    // 📌 Artık JWT kullanıyoruz, header'dan şifre aramaya gerek yok.
-    const result = await workerService.createWorker(req.body);
+    const performedByWorkerId = req.user.id; // Token'dan gelen admin ID
+    const result = await workerService.createWorker(req.body, performedByWorkerId);
 
     return reply.code(201).send({
       message: "Personel başarıyla oluşturuldu.",
@@ -27,11 +27,19 @@ const getAllWorkers = async (req, reply) => {
 
 const updateWorker = async (req, reply) => {
   try {
-    const result = await workerService.updateWorker(req.params.id, req.body);
+    const performedByWorkerId = req.user.id; // Token'dan gelen admin ID
+    const result = await workerService.updateWorker(req.params.id, req.body, performedByWorkerId);
     return reply.code(200).send(result);
   } catch (error) {
     return reply.code(400).send({ error: error.message });
   }
 };
-
-module.exports = { createWorker, getAllWorkers, updateWorker };
+const getWorkerLogs = async (req, reply) => {
+  try {
+    const logs = await workerService.getWorkerLogs();
+    return reply.code(200).send(logs);
+  } catch (error) {
+    return reply.code(500).send({ error: error.message });
+  }
+};
+module.exports = { createWorker, getAllWorkers, updateWorker, getWorkerLogs };

@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import Subscription from './pages/Subscription';
 import Invoices from './pages/Invoices';
+import SubscriptionOperations from './pages/SubscriptionOperations';
 
 // Dosya yollarının klasör yapınla birebir aynı olduğundan emin ol!
 import AdminLogin from './pages/Admin/AdminLogin';
@@ -20,6 +21,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/abonelik-islemleri" element={<SubscriptionOperations />} />
         <Route path="/about" element={<About />} />
         <Route path="/admin/users" element={<AdminUsers />} />
         <Route path="/admin/logs" element={<AdminLogs />} />

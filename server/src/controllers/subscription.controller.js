@@ -56,5 +56,31 @@ const approveSubscription = async (req, reply) => {
     return reply.code(400).send({ error: error.message });
   }
 };
+const cancelSubscription = async (req, reply) => {
+  try {
+    const { subscriptionId, idNo } = req.body;
+    const result = await subscriptionService.cancelSubscription(subscriptionId, idNo);
+    return reply.code(200).send({ message: "Abonelik başarıyla iptal edildi.", data: result });
+  } catch (error) {
+    return reply.code(400).send({ error: error.message });
+  }
+};
 
-module.exports = { applySubscription, getAllSubscriptions, approveSubscription };
+const updateContactInfo = async (req, reply) => {
+  try {
+    const { subscriptionId, idNo, mail, telephone } = req.body;
+    const result = await subscriptionService.updateContactInfo(subscriptionId, idNo, mail, telephone);
+    return reply.code(200).send({ message: "Bilgileriniz başarıyla güncellendi.", data: result });
+  } catch (error) {
+    return reply.code(400).send({ error: error.message });
+  }
+};
+const getSubscriptionLogs = async (req, reply) => {
+  try {
+    const logs = await subscriptionService.getSubscriptionLogs();
+    return reply.code(200).send(logs);
+  } catch (error) {
+    return reply.code(500).send({ error: error.message });
+  }
+};
+module.exports = { applySubscription, getAllSubscriptions, approveSubscription, cancelSubscription, updateContactInfo, getSubscriptionLogs };

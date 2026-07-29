@@ -1,8 +1,8 @@
 const prisma = require('../config/prisma');
 const { generateWorkerId, generateRandomPassword } = require('../utils/idGenerator');
 
-const createWorker = async (data) => {
-  const { name, surname, mail, telephone, idNo } = data;
+const createWorker = async (data, performedByWorkerId) => {
+  const { name, surname, mail, telephone, idNo, role } = data;
 
   if (!name || !surname || !mail) {
     throw new Error("Ad, soyad ve e-posta alanları zorunludur.");
@@ -18,12 +18,21 @@ const createWorker = async (data) => {
   const newWorker = await prisma.worker.create({
     data: {
       id: workerId,
-      role: "NULL", 
+      role: role || "WORKER", 
       status: "ACTIVE",
       password: generatedPassword,
       userId: newUser.id
     },
     include: { user: true }
+  });
+
+  // 📌 WorkerLog Kaydı At
+  await prisma.workerLog.create({
+    data: {
+      action: "CREATE_WORKER",
+      description: `${workerId} ID'li yeni personel (${name} ${surname}) oluşturuldu.`,
+      workerId: performedByWorkerId // İşlemi yapan admin
+    }
   });
 
   return {
@@ -41,7 +50,7 @@ const getAllWorkers = async () => {
   });
 };
 
-const updateWorker = async (targetWorkerId, data) => {
+const updateWorker = async (targetWorkerId, data, performedByWorkerId) => {
   const { role, status, telephone, mail } = data;
 
   const workerRecord = await prisma.worker.findUnique({
@@ -72,10 +81,30 @@ const updateWorker = async (targetWorkerId, data) => {
     include: { user: true }
   });
 
+  // 📌 WorkerLog Kaydı At
+  await prisma.workerLog.create({
+    data: {
+      action: "UPDATE_WORKER",
+      description: `${targetWorkerId} ID'li personel bilgileri güncellendi.`,
+      workerId: performedByWorkerId
+    }
+  });
+
   return {
     message: "Personel başarıyla güncellendi.",
     worker: updatedWorker
   };
 };
-
-module.exports = { createWorker, getAllWorkers, updateWorker };
+const getWorkerLogs = async () => {
+  return await prisma.workerLog.findMany({
+    include: {
+      worker: {
+        include: {
+          user: true
+        }
+      }
+    },
+    orderBy: { createdAt: 'desc' } // 📌 changedAt yerine createdAt olmalı
+  });
+};
+module.exports = { createWorker, getAllWorkers, updateWorker, getWorkerLogs };

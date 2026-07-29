@@ -5,6 +5,9 @@ async function subscriptionRoutes(fastify, options) {
   fastify.post('/', subscriptionController.applySubscription); // Vatandaş başvurusu (Açık)
   fastify.get('/', { preHandler: [adminAuth(['SUPERADMIN', 'ADMIN', 'IT'])] }, subscriptionController.getAllSubscriptions);
   fastify.post('/approve/:id', { preHandler: [adminAuth(['SUPERADMIN', 'ADMIN', 'IT'])] }, subscriptionController.approveSubscription);
+  fastify.post('/cancel', subscriptionController.cancelSubscription);
+  fastify.post('/update-contact', subscriptionController.updateContactInfo);
+fastify.get('/logs', { preHandler: [adminAuth(['SUPERADMIN', 'IT'])] }, subscriptionController.getSubscriptionLogs);
 }
 
 module.exports = subscriptionRoutes;

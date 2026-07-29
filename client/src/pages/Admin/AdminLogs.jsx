@@ -1,26 +1,53 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { History, ShieldCheck, Home, ArrowLeft, Clock } from 'lucide-react';
+import { History, ShieldCheck, Home, ArrowLeft, Clock, FileText } from 'lucide-react';
 
 export default function AdminLogs() {
+  const [activeTab, setActiveTab] = useState('worker'); // 'worker' veya 'subscription'
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchLogs = async () => {
+    let isMounted = true;
+
+    async function loadLogs() {
       try {
-        const res = await fetch('http://localhost:3000/workers/logs');
+        if (isMounted) setLoading(true);
+        
+        const endpoint = activeTab === 'worker' 
+          ? 'http://localhost:3000/workers/logs' 
+          : 'http://localhost:3000/subscriptions/logs';
+
+        const res = await fetch(endpoint, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+        
         const data = await res.json();
-        if (res.ok) setLogs(data);
+        
+        if (isMounted) {
+          if (res.ok) {
+            setLogs(Array.isArray(data) ? data : []);
+          } else {
+            setLogs([]);
+          }
+        }
       } catch (err) {
         console.error(err);
+        if (isMounted) setLogs([]);
       } finally {
-        setLoading(false);
+        if (isMounted) setLoading(false);
       }
+    }
+
+    loadLogs();
+
+    return () => {
+      isMounted = false;
     };
-    fetchLogs();
-  }, []);
+  }, [activeTab]);
 
   return (
     <div className="min-h-screen bg-slate-100 flex flex-col justify-between">
@@ -47,13 +74,37 @@ export default function AdminLogs() {
                 <History className="text-blue-600" size={28} />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-slate-900">Çalışan İşlem Geçmişi</h1>
-                <p className="text-sm text-slate-500">Personele ait fatura kesme ve sistem işlem loglarını inceleyin</p>
+                <h1 className="text-2xl font-bold text-slate-900">Sistem İşlem Geçmişi</h1>
+                <p className="text-sm text-slate-500">Personel ve abonelik hareketlerini inceleyin</p>
               </div>
             </div>
             <div className="text-sm font-medium text-slate-600 bg-white px-4 py-2 rounded-xl border border-slate-200 shadow-sm">
-              Toplam İşlem: <span className="font-bold text-blue-600">{logs.length}</span>
+              Toplam Kayıt: <span className="font-bold text-blue-600">{logs.length}</span>
             </div>
+          </div>
+
+          {/* Sekme Butonları */}
+          <div className="flex gap-4 mb-6">
+            <button
+              onClick={() => setActiveTab('worker')}
+              className={`flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm transition-all border ${
+                activeTab === 'worker'
+                  ? 'bg-blue-600 text-white border-blue-600 shadow-sm'
+                  : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
+              }`}
+            >
+              <History size={18} /> Worker Logları
+            </button>
+            <button
+              onClick={() => setActiveTab('subscription')}
+              className={`flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm transition-all border ${
+                activeTab === 'subscription'
+                  ? 'bg-blue-600 text-white border-blue-600 shadow-sm'
+                  : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
+              }`}
+            >
+              <FileText size={18} /> Subscription Logları
+            </button>
           </div>
 
           {loading ? (
@@ -67,7 +118,7 @@ export default function AdminLogs() {
                   <thead>
                     <tr className="bg-slate-50 border-b border-slate-200 text-slate-600 text-xs uppercase tracking-wider font-semibold">
                       <th className="py-4 px-6">İşlem Türü</th>
-                      <th className="py-4 px-6">Personel</th>
+                      <th className="py-4 px-6">{activeTab === 'worker' ? 'Personel' : 'İlgili Bilgi'}</th>
                       <th className="py-4 px-6">Açıklama</th>
                       <th className="py-4 px-6">Tarih / Saat</th>
                     </tr>
@@ -75,7 +126,7 @@ export default function AdminLogs() {
                   <tbody className="divide-y divide-slate-100 text-sm">
                     {logs.length === 0 ? (
                       <tr>
-                        <td colSpan="4" className="text-center py-12 text-slate-400">Henüz kayıtlı bir işlem bulunmuyor.</td>
+                        <td colSpan="4" className="text-center py-12 text-slate-400">Bu kategoride henüz kayıt bulunmuyor.</td>
                       </tr>
                     ) : (
                       logs.map((log) => (
@@ -86,12 +137,14 @@ export default function AdminLogs() {
                             </span>
                           </td>
                           <td className="py-4 px-6 font-semibold text-slate-800">
-                            {log.worker?.user ? `${log.worker.user.name} ${log.worker.user.surname}` : log.workerId}
+                            {activeTab === 'worker' 
+                              ? (log.worker?.user ? `${log.worker.user.name} ${log.worker.user.surname}` : log.workerId)
+                              : (log.subscriptionId || 'Sistem')}
                           </td>
                           <td className="py-4 px-6 text-slate-600 text-xs">{log.description || '-'}</td>
                           <td className="py-4 px-6 text-xs text-slate-500 flex items-center gap-1.5 pt-5">
                             <Clock size={13} className="text-slate-400" />
-                            {new Date(log.changedAt).toLocaleString('tr-TR')}
+                            {new Date(log.changedAt || log.createdAt).toLocaleString('tr-TR')}
                           </td>
                         </tr>
                       ))
