@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
-
-import { Users, ShieldCheck, Mail, Phone, UserCheck, Shield, X, Check } from 'lucide-react';
+import { Users, ShieldCheck, Mail, Phone, UserCheck, Shield } from 'lucide-react';
 import { getWorkersApi, updateWorkerApi } from '../../services/api';
 import Footer from '../../components/Footer';
 import AdminHeader from '../../components/AdminHeader';
+import WorkerEditModal from '../../components/WorkerEditModal';
+
 export default function AdminWorkers() {
   const [workers, setWorkers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -20,22 +21,7 @@ export default function AdminWorkers() {
     status: 'ACTIVE'
   });
 
-  useEffect(() => {
-    const fetchWorkers = async () => {
-      try {
-        setLoading(true);
-        const data = await getWorkersApi();
-        setWorkers(data);
-      } catch (err) {
-        setErrorMessage(err.message || "Sunucuya bağlanılamadı.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchWorkers();
-  }, []);
-
+  // 📌 Veri çekme fonksiyonunu bağımsız bir yardımcı fonksiyon yapıyoruz
   const fetchWorkersList = async () => {
     try {
       setLoading(true);
@@ -47,6 +33,29 @@ export default function AdminWorkers() {
       setLoading(false);
     }
   };
+
+  // 📌 useEffect içerisine doğrudan async bir fonksiyon yazarak linter uyarılarını kesiyoruz
+  useEffect(() => {
+    let isMounted = true;
+    
+    async function loadData() {
+      try {
+        setLoading(true);
+        const data = await getWorkersApi();
+        if (isMounted) setWorkers(data);
+      } catch (err) {
+        if (isMounted) setErrorMessage(err.message || "Sunucuya bağlanılamadı.");
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    }
+
+    loadData();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const filteredWorkers = workers.filter((worker) => {
     const fullName = `${worker.user?.name || ''} ${worker.user?.surname || ''}`.toLowerCase();
@@ -79,7 +88,7 @@ export default function AdminWorkers() {
   return (
     <div className="min-h-screen bg-slate-100 flex flex-col justify-between">
       <div>
-        <AdminHeader/>
+        <AdminHeader />
 
         <div className="max-w-6xl mx-auto px-6 py-10">
           <div className="flex items-center justify-between mb-8">
@@ -103,7 +112,7 @@ export default function AdminWorkers() {
               placeholder="Personel adı veya soyadı ile ara..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-4 py-2 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+              className="w-full px-4 py-2 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-800"
             />
           </div>
 
@@ -160,7 +169,6 @@ export default function AdminWorkers() {
                               {worker.role === 'ADMIN' && <Shield size={12} />}
                               {worker.role === 'IT' && <ShieldCheck size={12} />}
                               {worker.role === 'WORKER' && <UserCheck size={12} />}
-                              
                               {worker.role === 'WORKER' ? 'İşçi' : worker.role === 'IT' ? 'IT' : worker.role}
                             </span>
                           </td>
@@ -189,78 +197,16 @@ export default function AdminWorkers() {
         </div>
       </div>
 
-      {/* DÜZENLEME MODALI */}
-      {isEditing && selectedWorker && (
-        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex justify-center items-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 border border-slate-200 relative animate-in fade-in zoom-in duration-200">
-            <button onClick={() => setIsEditing(false)} className="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
-              <X size={20} />
-            </button>
+      <WorkerEditModal 
+        isEditing={isEditing}
+        selectedWorker={selectedWorker}
+        editFormData={editFormData}
+        setEditFormData={setEditFormData}
+        onClose={() => setIsEditing(false)}
+        onSubmit={handleUpdateSubmit}
+      />
 
-            <h2 className="text-xl font-bold text-slate-900 mb-1">Personel Düzenle</h2>
-            <p className="text-xs text-slate-500 mb-6">{selectedWorker.user?.name} {selectedWorker.user?.surname} ({selectedWorker.id})</p>
-
-            <form onSubmit={handleUpdateSubmit} className="flex flex-col gap-4">
-              <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1">E-posta</label>
-                <input
-                  type="email"
-                  value={editFormData.mail}
-                  onChange={(e) => setEditFormData({ ...editFormData, mail: e.target.value })}
-                  className="w-full p-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1">Telefon</label>
-                <input
-                  type="text"
-                  value={editFormData.telephone}
-                  onChange={(e) => setEditFormData({ ...editFormData, telephone: e.target.value })}
-                  className="w-full p-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1">Rol</label>
-                <select
-                  value={editFormData.role}
-                  onChange={(e) => setEditFormData({ ...editFormData, role: e.target.value })}
-                  className="w-full p-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="WORKER">İşçi</option>
-                  <option value="IT">IT</option>
-                  <option value="ADMIN">Admin</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1">Durum</label>
-                <select
-                  value={editFormData.status}
-                  onChange={(e) => setEditFormData({ ...editFormData, status: e.target.value })}
-                  className="w-full p-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="ACTIVE">ACTIVE</option>
-                  <option value="INACTIVE">INACTIVE</option>
-                </select>
-              </div>
-
-              <div className="mt-4">
-                <button
-                  type="submit"
-                  className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-bold shadow-sm transition-colors flex items-center justify-center gap-2"
-                >
-                  <Check size={16} /> Kaydet
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      <Footer/>
+      <Footer />
     </div>
   );
 }

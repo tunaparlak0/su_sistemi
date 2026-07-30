@@ -29,7 +29,7 @@ const createInvoice = async (req, reply) => {
   try {
     const { subscriptionId, usedWater } = req.body; 
     
-    // 📌 Artık JWT token kullanıyoruz. req.user içeriği adminAuth middleware'inden geliyor!
+    //JWT token kullanıyoruz. req.user içeriği adminAuth middleware'inden geliyor!
     const workerId = req.user?.id;
 
     if (!workerId) {

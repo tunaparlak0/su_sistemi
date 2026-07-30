@@ -16,7 +16,7 @@ const createWorker = async (req, reply) => {
 
 const getAllWorkers = async (req, reply) => {
   try {
-    // 📌 Token zaten adminAuth middleware'inden geçti, doğrudan servisi çağırıyoruz
+    // Token zaten adminAuth middleware'inden geçti, doğrudan servisi çağırıyoruz
     const workers = await workerService.getAllWorkers();
 
     return reply.code(200).send(workers);
