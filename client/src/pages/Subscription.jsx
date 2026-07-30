@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { postSubscription } from '../services/api';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Home, Droplets, ArrowRight } from 'lucide-react';
-
+import { ArrowRight } from 'lucide-react';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
 export default function Subscription() {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
@@ -94,26 +95,7 @@ export default function Subscription() {
   return (
     <div className="min-h-screen bg-slate-100 flex flex-col justify-between">
       <div>
-        <header className="bg-white border-b border-slate-200 py-4 px-6 shadow-sm">
-          <div className="max-w-4xl mx-auto flex justify-between items-center">
-            <button 
-              onClick={() => step === 2 ? setStep(1) : navigate(-1)} 
-              className="flex items-center gap-2 text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors bg-slate-50 px-4 py-2 rounded-xl border border-slate-200"
-            >
-              <ArrowLeft size={16} /> {step === 2 ? "Geri" : "Geri Dön"}
-            </button>
-            <div className="flex items-center gap-2 text-blue-900">
-              <Droplets size={26} className="text-blue-600" />
-              <span className="font-bold tracking-tight text-lg">SASKİ Su Yönetimi</span>
-            </div>
-            <button 
-              onClick={() => navigate('/')} 
-              className="flex items-center gap-2 text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors bg-slate-50 px-4 py-2 rounded-xl border border-slate-200"
-            >
-              <Home size={16} /> Ana Sayfa
-            </button>
-          </div>
-        </header>
+        <Header/>
 
         <div className="max-w-xl w-full mx-auto px-4 py-8">
           <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-200">
@@ -181,12 +163,7 @@ export default function Subscription() {
         </div>
       </div>
 
-      <footer className="bg-white border-t border-slate-200 py-6 text-center text-slate-500 text-sm mt-auto">
-        <div className="max-w-4xl mx-auto px-6 flex flex-col sm:flex-row justify-between items-center gap-2">
-          <p>© 2026 Tuna Parlak | SASKİ Su Yönetim Sistemi</p>
-          <p className="font-semibold text-slate-700">Tüm hakları saklıdır.</p>
-        </div>
-      </footer>
+      <Footer/>
     </div>
   );
 }

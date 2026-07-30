@@ -1,11 +1,12 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, UserX, Edit3, CheckCircle2 } from 'lucide-react';
 
+import { UserX, Edit3, CheckCircle2 } from 'lucide-react';
+import Footer from '../components/Footer';
+import Header from '../components/Header';
 const API_URL = "http://localhost:3000";
 
 export default function SubscriptionOperations() {
-  const navigate = useNavigate();
+  
   const [activeTab, setActiveTab] = useState('iptal'); // 'iptal', 'guncelle'
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -70,18 +71,7 @@ export default function SubscriptionOperations() {
   return (
     <main className="min-h-screen bg-slate-50 flex flex-col justify-between">
       <div>
-        <nav className="p-6 bg-white border-b border-slate-200">
-          <div className="max-w-5xl mx-auto flex items-center justify-between">
-            <button 
-              onClick={() => navigate('/')} 
-              className="flex items-center gap-2 text-slate-600 hover:text-blue-600 transition-colors font-medium text-sm"
-            >
-              <ArrowLeft size={20} />
-              Ana Sayfaya Dön
-            </button>
-            <span className="text-sm font-semibold text-slate-500">SASKİ Su Yönetim Sistemi</span>
-          </div>
-        </nav>
+        <Header/>
 
         <section className="max-w-4xl mx-auto pt-12 px-6 mb-16">
           <div className="text-center mb-10">
@@ -229,12 +219,7 @@ export default function SubscriptionOperations() {
         </section>
       </div>
 
-      <footer className="bg-white border-t border-slate-200 py-6 text-center text-slate-500 text-sm">
-        <div className="max-w-5xl mx-auto px-6 flex flex-col sm:flex-row justify-between items-center gap-2">
-          <p>© 2026 Tuna Parlak | SASKİ Su Yönetim Sistemi</p>
-          <p className="font-semibold text-slate-700">Tüm hakları saklıdır.</p>
-        </div>
-      </footer>
+      <Footer/>
     </main>
   );
 }

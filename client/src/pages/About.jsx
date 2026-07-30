@@ -1,39 +1,15 @@
-import { useNavigate } from 'react-router-dom';
-import { ShieldCheck, Home, Info, Droplets, Award, Users, Target } from 'lucide-react';
+import { Info, Target, Droplets, Award } from 'lucide-react';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
+import { KurumsalBilgi } from '../components/KurumsalBilgi';
 
 export default function About() {
-  const navigate = useNavigate();
-
   return (
     <div className="min-h-screen bg-slate-100 flex flex-col justify-between">
       <div>
-        {/* Üst Header Alanı */}
-        <header className="bg-white border-b border-slate-200 py-4 px-6 shadow-sm">
-          <div className="max-w-5xl mx-auto flex justify-between items-center">
-            <button 
-              onClick={() => navigate('/')} 
-              className="flex items-center gap-2 text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors bg-slate-50 px-4 py-2 rounded-xl border border-slate-200"
-            >
-              <Home size={16} /> Ana Sayfa
-            </button>
+        <Header />
 
-            <div className="flex items-center gap-2 text-blue-900">
-              <ShieldCheck size={26} className="text-blue-600" />
-              <span className="font-bold tracking-tight text-lg">SASKİ Su Yönetimi</span>
-            </div>
-
-            <button 
-              onClick={() => navigate(-1)} 
-              className="flex items-center gap-2 text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors bg-slate-50 px-4 py-2 rounded-xl border border-slate-200"
-            >
-              Geri Dön
-            </button>
-          </div>
-        </header>
-
-        {/* Ana İçerik Alanı */}
         <div className="max-w-5xl mx-auto px-6 py-12">
-          
           {/* Başlık Bölümü */}
           <div className="flex items-center gap-3 mb-8">
             <div className="p-3 bg-blue-50 rounded-xl border border-blue-100">
@@ -45,7 +21,7 @@ export default function About() {
             </div>
           </div>
 
-          {/* İçerik Kartları */}
+          {/* İçerik Kartları (Vizyon, Misyon, Güvenilirlik) */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
             
             {/* Vizyon Kartı */}
@@ -70,7 +46,7 @@ export default function About() {
               </p>
             </div>
 
-            {/* Kalite Kartı */}
+            {/* Güvenilirlik Kartı */}
             <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col gap-4">
               <div className="p-3 bg-blue-50 w-fit rounded-xl text-blue-600">
                 <Award size={24} />
@@ -84,29 +60,11 @@ export default function About() {
           </div>
 
           {/* Kurumsal Bilgi Kutusu */}
-          <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-8 flex flex-col gap-6">
-            <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
-              <Users size={20} className="text-blue-600" /> SASKİ Dijital Su Yönetim Sistemi Hakkında
-            </h2>
-            <p className="text-slate-600 text-sm leading-relaxed">
-              Bu platform; abonelik başvurularından anlık fatura takibine, sayaç okuma operasyonlarından personel yetkilendirmelerine kadar tüm su yönetim süreçlerini tek bir merkezden koordine etmek amacıyla geliştirilmiştir. Modern web teknolojileri kullanılarak hazırlanan sistemimiz, hem abonelerimiz için kullanıcı dostu bir deneyim hem de yöneticilerimiz için güçlü bir kontrol paneli sunar.
-            </p>
-            <div className="border-t border-slate-100 pt-4 flex flex-col sm:flex-row justify-between text-xs text-slate-500 gap-2">
-              <span>Geliştirici: Tuna Parlak</span>
-              <span>Proje: SASKİ Su Yönetim Sistemi (2026)</span>
-            </div>
-          </div>
-
+          <KurumsalBilgi/>
         </div>
       </div>
 
-      {/* Alt Footer Alanı */}
-      <footer className="bg-white border-t border-slate-200 py-6 text-center text-slate-500 text-sm mt-auto">
-        <div className="max-w-5xl mx-auto px-6 flex flex-col sm:flex-row justify-between items-center gap-2">
-          <p>© 2026 Tuna Parlak | SASKİ Su Yönetim Sistemi</p>
-          <p className="font-semibold text-slate-700">Tüm hakları saklıdır.</p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

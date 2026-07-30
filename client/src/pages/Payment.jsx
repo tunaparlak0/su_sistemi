@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ShieldCheck, CreditCard, ArrowLeft, Lock, CheckCircle2 } from 'lucide-react';
-
+import Footer from '../components/Footer';
 export default function Payment() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -247,11 +247,7 @@ export default function Payment() {
         </div>
       </div>
 
-      <footer className="bg-white border-t border-slate-200 py-6 text-center text-slate-500 text-sm mt-auto">
-        <div className="max-w-3xl mx-auto px-6">
-          <p>© 2026 Tuna Parlak | SASKİ Su Yönetim Sistemi</p>
-        </div>
-      </footer>
+      <Footer/>
     </div>
   );
 }
