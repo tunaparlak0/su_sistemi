@@ -24,7 +24,7 @@ export default function AdminHeader() {
 
         <div className="flex items-center gap-2 text-blue-900">
           <ShieldCheck size={26} className="text-blue-600" />
-          <span className="font-bold tracking-tight text-lg">SASKİ Admin Paneli ({userRole})</span>
+          <span className="font-bold tracking-tight text-lg">TSKİ Admin Paneli ({userRole})</span>
         </div>
 
         <div className="flex items-center gap-2">
