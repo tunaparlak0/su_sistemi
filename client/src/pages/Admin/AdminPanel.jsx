@@ -36,18 +36,20 @@ export default function AdminPanel() {
             )}
 
             {/* Abonelik Onay */}
-            <button 
-              onClick={() => navigate('/abonelik-onay')}
-              className="p-6 bg-white border border-slate-200 rounded-2xl shadow-sm hover:border-blue-300 hover:shadow-md transition-all text-left flex flex-col gap-4"
-            >
-              <div className="p-4 bg-green-50 rounded-xl w-fit">
-                <CheckCircle className="text-green-600" size={28} />
-              </div>
-              <div>
-                <h3 className="text-lg font-bold text-slate-900">Abonelik Onay</h3>
-                <p className="text-sm text-slate-500">Bekleyen başvuruları inceleyin</p>
-              </div>
-            </button>
+            {(userRole === 'SUPERADMIN' || userRole === 'ADMIN' || userRole === 'IT') && (
+  <button 
+    onClick={() => navigate('/abonelik-onay')}
+    className="p-6 bg-white border border-slate-200 rounded-2xl shadow-sm hover:border-blue-300 hover:shadow-md transition-all text-left flex flex-col gap-4"
+  >
+    <div className="p-4 bg-green-50 rounded-xl w-fit">
+      <CheckCircle className="text-green-600" size={28} />
+    </div>
+    <div>
+      <h3 className="text-lg font-bold text-slate-900">Abonelik Onay</h3>
+      <p className="text-sm text-slate-500">Bekleyen başvuruları inceleyin</p>
+    </div>
+  </button>
+)}
 
             {/* Personel Yönetimi */}
             {(userRole === 'SUPERADMIN' || userRole === 'IT' || userRole === 'ADMIN') && (
@@ -80,21 +82,22 @@ export default function AdminPanel() {
             </button>
 
             {/* Kullanıcı Bilgileri */}
-            <button 
-              onClick={() => navigate('/admin/users')}
-              className="p-6 bg-white border border-slate-200 rounded-2xl shadow-sm hover:border-blue-300 hover:shadow-md transition-all text-left flex flex-col gap-4"
-            >
-              <div className="p-4 bg-indigo-50 rounded-xl w-fit">
-                <UserCheck className="text-indigo-600" size={28} />
-              </div>
-              <div>
-                <h3 className="text-lg font-bold text-slate-900">Kullanıcı Bilgileri</h3>
-                <p className="text-sm text-slate-500">Sistemdeki tüm aboneleri görüntüleyin</p>
-              </div>
-            </button>
-
+            {(userRole === 'SUPERADMIN' || userRole === 'ADMIN' || userRole === 'IT') && (
+              <button 
+                onClick={() => navigate('/admin/users')}
+                className="p-6 bg-white border border-slate-200 rounded-2xl shadow-sm hover:border-blue-300 hover:shadow-md transition-all text-left flex flex-col gap-4"
+              >
+                <div className="p-4 bg-indigo-50 rounded-xl w-fit">
+                  <UserCheck className="text-indigo-600" size={28} />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-slate-900">Kullanıcı Bilgileri</h3>
+                  <p className="text-sm text-slate-500">Sistemdeki tüm aboneleri görüntüleyin</p>
+                </div>
+              </button>
+            )}
             {/* İşlem Geçmişi -> Sadece ADMIN göremesin (SUPERADMIN görür) */}
-            {userRole !== 'ADMIN' && (
+            {(userRole === 'SUPERADMIN' || userRole === 'IT') && (
               <button 
                 onClick={() => navigate('/admin/logs')}
                 className="p-6 bg-white border border-slate-200 rounded-2xl shadow-sm hover:border-blue-300 hover:shadow-md transition-all text-left flex flex-col gap-4"
@@ -110,18 +113,20 @@ export default function AdminPanel() {
             )}
 
             {/* Sayaç Yönetimi */}
-            <button 
-              onClick={() => navigate('/admin/meters')}
-              className="p-6 bg-white border border-slate-200 rounded-2xl shadow-sm hover:border-blue-300 hover:shadow-md transition-all text-left flex flex-col gap-4"
-            >
-              <div className="p-4 bg-teal-50 rounded-xl w-fit">
-                <Gauge className="text-teal-600" size={28} />
-              </div>
-              <div>
-                <h3 className="text-lg font-bold text-slate-900">Sayaç Yönetimi</h3>
-                <p className="text-sm text-slate-500">Sayaçları ve abonelik geçmişini inceleyin</p>
-              </div>
-            </button>
+            {(userRole === 'SUPERADMIN' || userRole === 'ADMIN' || userRole === 'IT') && (
+              <button 
+                onClick={() => navigate('/admin/meters')}
+                className="p-6 bg-white border border-slate-200 rounded-2xl shadow-sm hover:border-blue-300 hover:shadow-md transition-all text-left flex flex-col gap-4"
+              >
+                <div className="p-4 bg-teal-50 rounded-xl w-fit">
+                  <Gauge className="text-teal-600" size={28} />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-slate-900">Sayaç Yönetimi</h3>
+                  <p className="text-sm text-slate-500">Sayaçları ve abonelik geçmişini inceleyin</p>
+                </div>
+              </button>
+            )}
 
           </div>
         </div>

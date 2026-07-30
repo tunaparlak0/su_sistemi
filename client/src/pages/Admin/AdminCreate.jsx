@@ -10,7 +10,6 @@ export default function AdminCreate() {
     mail: '', 
     telephone: '', 
     idNo: ''
-    // 📌 'role' alanını buradan kaldırdık
   });
   
   const [message, setMessage] = useState('');
