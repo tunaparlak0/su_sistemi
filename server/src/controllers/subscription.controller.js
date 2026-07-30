@@ -83,4 +83,13 @@ const getSubscriptionLogs = async (req, reply) => {
     return reply.code(500).send({ error: error.message });
   }
 };
-module.exports = { applySubscription, getAllSubscriptions, approveSubscription, cancelSubscription, updateContactInfo, getSubscriptionLogs };
+const getLogsBySubscriptionId = async (req, reply) => {
+  try {
+    const { id } = req.params;
+    const logs = await subscriptionService.getLogsBySubscriptionId(id);
+    return reply.code(200).send(logs);
+  } catch (error) {
+    return reply.code(500).send({ error: error.message });
+  }
+};
+module.exports = { applySubscription, getAllSubscriptions, approveSubscription, cancelSubscription, updateContactInfo, getSubscriptionLogs, getLogsBySubscriptionId };

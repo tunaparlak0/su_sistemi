@@ -6,8 +6,8 @@ const getInvoicesBySubscriptionId = async (subscriptionId) => {
     include: {
       subscription: {
         include: {
-          meter: true,   // Adres bilgisi için Meter'ı alıyoruz
-          owners: true   // İsim, soyisim için User'ları alıyoruz
+          meter: true,   
+          owners: true   
         }
       }
     },
@@ -16,6 +16,7 @@ const getInvoicesBySubscriptionId = async (subscriptionId) => {
 
   return invoices;
 };
+
 const getInvoiceById = async (invoiceId) => {
   const invoice = await prisma.invoice.findUnique({
     where: { id: invoiceId },
@@ -39,7 +40,6 @@ const getInvoiceById = async (invoiceId) => {
 const createInvoice = async (data, workerId) => {
   const { subscriptionId, usedWater } = data;
 
-  // 1. Aboneliği ve bağlı olduğu sayaç ile tarife bilgisini bul
   const subscription = await prisma.subscription.findUnique({
     where: { id: subscriptionId },
     include: { meter: true }
@@ -53,22 +53,19 @@ const createInvoice = async (data, workerId) => {
     throw new Error("Bu abonelik aktif durumda değil.");
   }
 
-  // 📌 2. Tarife tipini önce aboneliğin kendi 'type' alanından, yoksa bağlı olduğu sayacın 'type' alanından alıyoruz
   const tariffType = subscription.type || subscription.meter?.type || "EV";
 
-  // 3. Tarife tipine göre birim fiyat ve vergi belirle (EV, KOY, KURUMSAL)
   let unitPrice = 10; 
   let taxRate = 0.10; 
 
   if (tariffType === "KOY") {
-    unitPrice = 5;     
+    unitPrice = 5;    
     taxRate = 0.05;
   } else if (tariffType === "KURUMSAL") {
     unitPrice = 20;   
     taxRate = 0.18;
   }
 
-  // 4. Fiyat Hesaplama
   const waterAmount = parseFloat(usedWater);
   const subTotal = waterAmount * unitPrice;
   const taxAmount = subTotal * taxRate;
@@ -77,7 +74,6 @@ const createInvoice = async (data, workerId) => {
   const dueDate = new Date();
   dueDate.setDate(dueDate.getDate() + 15);
 
-  // 5. Faturayı Kaydet
   const newInvoice = await prisma.invoice.create({
     data: {
       usedWater: waterAmount,
@@ -89,28 +85,30 @@ const createInvoice = async (data, workerId) => {
     }
   });
 
-  // 6. WorkerLog Kaydı At
-  await prisma.workerLog.create({
-    data: {
-      action: "CREATE_INVOICE",
-      description: `${subscriptionId} numaralı abonelik için ${waterAmount} m3 tüketimli fatura kesildi.`,
-      workerId: workerId
-    }
-  });
+  // WorkerLog Kaydı
+  if (workerId) {
+    await prisma.workerLog.create({
+      data: {
+        action: "CREATE_INVOICE",
+        description: `${subscriptionId} numaralı abonelik için ${waterAmount} m3 tüketimli fatura kesildi.`,
+        workerId: workerId
+      }
+    });
+  }
 
   return newInvoice;
 };
 
 const payInvoice = async (invoiceId) => {
   const invoice = await prisma.invoice.findUnique({
-    where: { id: invoiceId }
+    where: { id: invoiceId },
+    include: { subscription: true }
   });
 
   if (!invoice) {
     throw new Error("Fatura bulunamadı.");
   }
 
-  // Eğer fatura zaten ödenmişse tekrar ödemeye çalışmasın
   if (invoice.isPaid) {
     throw new Error("Bu fatura zaten daha önce ödenmiştir.");
   }

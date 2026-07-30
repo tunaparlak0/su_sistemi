@@ -8,6 +8,21 @@ export default function AdminLogs() {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
+  // 📌 İngilizce aksiyonları Türkçe'ye çeviren yardımcı fonksiyon
+  const translateAction = (action) => {
+    switch (action) {
+      case 'CREATE_WORKER': return 'Personel Oluşturuldu';
+      case 'UPDATE_WORKER': return 'Personel Güncellendi';
+      case 'APPROVE_SUBSCRIPTION': return 'Abonelik Onaylandı';
+      case 'CREATE_INVOICE': return 'Fatura Kesildi';
+      case 'NEW_START': return 'Yeni Başvuru';
+      case 'APPROVED': return 'Abonelik Aktifleştirildi';
+      case 'CANCELLED': return 'Abonelik İptal Edildi';
+      case 'TRANSFER': return 'Devir / Transfer';
+      default: return action;
+    }
+  };
+
   useEffect(() => {
     let isMounted = true;
 
@@ -93,7 +108,7 @@ export default function AdminLogs() {
                   : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
               }`}
             >
-              <History size={18} /> Worker Logları
+              <History size={18} /> Personel Logları
             </button>
             <button
               onClick={() => setActiveTab('subscription')}
@@ -103,7 +118,7 @@ export default function AdminLogs() {
                   : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
               }`}
             >
-              <FileText size={18} /> Subscription Logları
+              <FileText size={18} /> Abonelik Logları
             </button>
           </div>
 
@@ -118,7 +133,7 @@ export default function AdminLogs() {
                   <thead>
                     <tr className="bg-slate-50 border-b border-slate-200 text-slate-600 text-xs uppercase tracking-wider font-semibold">
                       <th className="py-4 px-6">İşlem Türü</th>
-                      <th className="py-4 px-6">{activeTab === 'worker' ? 'Personel' : 'İlgili Bilgi'}</th>
+                      <th className="py-4 px-6">{activeTab === 'worker' ? 'Personel' : 'İlgili Abone / Sayaç'}</th>
                       <th className="py-4 px-6">Açıklama</th>
                       <th className="py-4 px-6">Tarih / Saat</th>
                     </tr>
@@ -129,25 +144,32 @@ export default function AdminLogs() {
                         <td colSpan="4" className="text-center py-12 text-slate-400">Bu kategoride henüz kayıt bulunmuyor.</td>
                       </tr>
                     ) : (
-                      logs.map((log) => (
-                        <tr key={log.id} className="hover:bg-slate-50/80 transition-colors">
-                          <td className="py-4 px-6">
-                            <span className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-bold border border-blue-200">
-                              {log.action}
-                            </span>
-                          </td>
-                          <td className="py-4 px-6 font-semibold text-slate-800">
-                            {activeTab === 'worker' 
-                              ? (log.worker?.user ? `${log.worker.user.name} ${log.worker.user.surname}` : log.workerId)
-                              : (log.subscriptionId || 'Sistem')}
-                          </td>
-                          <td className="py-4 px-6 text-slate-600 text-xs">{log.description || '-'}</td>
-                          <td className="py-4 px-6 text-xs text-slate-500 flex items-center gap-1.5 pt-5">
-                            <Clock size={13} className="text-slate-400" />
-                            {new Date(log.changedAt || log.createdAt).toLocaleString('tr-TR')}
-                          </td>
-                        </tr>
-                      ))
+                      logs.map((log) => {
+                        // Abonelik loglarında description olmadığı için dinamik açıklama üretelim
+                        const descriptionText = activeTab === 'worker' 
+                          ? (log.description || '-')
+                          : `${log.subscriptionId || 'Bilinmeyen'} numaralı abonelik ve ${log.meterNo || '-'} numaralı sayaç üzerinde işlem gerçekleştirildi.`;
+
+                        return (
+                          <tr key={log.id} className="hover:bg-slate-50/80 transition-colors">
+                            <td className="py-4 px-6">
+                              <span className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-bold border border-blue-200">
+                                {translateAction(log.action)}
+                              </span>
+                            </td>
+                            <td className="py-4 px-6 font-semibold text-slate-800">
+                              {activeTab === 'worker' 
+                                ? (log.worker?.user ? `${log.worker.user.name} ${log.worker.user.surname}` : log.workerId)
+                                : (log.subscriptionId ? `Abonelik: ${log.subscriptionId}` : 'Sistem')}
+                            </td>
+                            <td className="py-4 px-6 text-slate-600 text-xs">{descriptionText}</td>
+                            <td className="py-4 px-6 text-xs text-slate-500 flex items-center gap-1.5 pt-5">
+                              <Clock size={13} className="text-slate-400" />
+                              {new Date(log.changedAt || log.createdAt).toLocaleString('tr-TR')}
+                            </td>
+                          </tr>
+                        );
+                      })
                     )}
                   </tbody>
                 </table>

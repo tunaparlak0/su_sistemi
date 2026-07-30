@@ -184,12 +184,22 @@ const getSubscriptionLogs = async () => {
     orderBy: { changedAt: 'desc' }
   });
 };
-
+const getLogsBySubscriptionId = async (subscriptionId) => {
+  return await prisma.subscriptionLog.findMany({
+    where: { subscriptionId },
+    include: {
+      user: true,
+      meter: true
+    },
+    orderBy: { changedAt: 'desc' }
+  });
+};
 module.exports = { 
   applySubscription, 
   getAllSubscriptions, 
   approveSubscription, 
   cancelSubscription, 
   updateContactInfo, 
-  getSubscriptionLogs 
+  getSubscriptionLogs,    
+  getLogsBySubscriptionId
 };
