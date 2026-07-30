@@ -205,8 +205,6 @@ export default function Invoices() {
           </div>
         </div>
       )}
-
-      {/* Ortak Footer Bileşeni */}
       <Footer />
     </div>
   );

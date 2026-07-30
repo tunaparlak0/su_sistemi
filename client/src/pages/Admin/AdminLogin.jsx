@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { adminLoginApi } from '../../services/api'; // api.js üzerinden çağrı
+import { adminLoginApi } from '../../services/api';
 
 export default function AdminLogin() {
   const [adminData, setAdminData] = useState({ id: '', password: '' });
@@ -14,9 +14,6 @@ export default function AdminLogin() {
     try {
       // api.js'deki fonksiyonu kullanıyoruz
       await adminLoginApi(adminData);
-      
-      // Artık localStorage'da şifreler (adminPassword) DEĞİL, 
-      // sadece yetkilendirme için JWT token ve userRole saklanıyor.
       navigate('/admin-panel');
 
     } catch (err) {

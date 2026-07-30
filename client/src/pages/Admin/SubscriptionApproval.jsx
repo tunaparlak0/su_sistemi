@@ -29,7 +29,6 @@ export default function SubscriptionApproval() {
     }
   }, []);
 
-  // 📌 useCallback veya useEffect içindeki karmaşayı sadeleştiriyoruz
   useEffect(() => {
     let isMounted = true;
 
@@ -63,7 +62,7 @@ export default function SubscriptionApproval() {
     return () => {
       isMounted = false;
     };
-  }, []); // 📌 Boş bağımlılık dizisi sayesinde sayfa ilk açıldığında bir kez güvenle çalışır
+  }, []); // Boş bağımlılık dizisi sayesinde sayfa ilk açıldığında bir kez güvenle çalışır
   const handleApprove = async (id) => {
     try {
       await approveSubscriptionApi(id);

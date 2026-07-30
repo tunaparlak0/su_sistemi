@@ -104,8 +104,6 @@ export default function AdminCreate() {
                 required
               />
 
-              {/* 📌 Rol seçme select kutusu buradan kaldırıldı. */}
-
               <button type="submit" className="w-full mt-4 p-4 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 transition-colors shadow-md">
                 Oluştur
               </button>

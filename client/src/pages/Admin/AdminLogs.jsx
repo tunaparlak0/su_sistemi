@@ -7,7 +7,7 @@ export default function AdminLogs() {
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // 📌 İngilizce aksiyonları Türkçe'ye çeviren yardımcı fonksiyon
+  //İngilizce aksiyonları Türkçe'ye çeviren yardımcı fonksiyon
   const translateAction = (action) => {
     switch (action) {
       case 'CREATE_WORKER': return 'Personel Oluşturuldu';

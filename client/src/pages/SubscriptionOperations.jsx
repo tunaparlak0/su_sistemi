@@ -83,7 +83,7 @@ export default function SubscriptionOperations() {
             </p>
           </div>
 
-          {/* 📌 2'ye düşürülen Sekme Butonları */}
+        
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
             <button
               onClick={() => setActiveTab('iptal')}

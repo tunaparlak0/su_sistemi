@@ -12,7 +12,7 @@ export default function AdminMeters() {
   const [showOldOwners, setShowOldOwners] = useState(false);
  
 
-  // 📌 İngilizce aksiyon ve durumları Türkçe'ye çeviren yardımcı fonksiyonlar
+  // İngilizce aksiyon ve durumları Türkçe'ye çeviren yardımcı fonksiyonlar
   const translateAction = (action) => {
     switch (action) {
       case 'NEW_START': return 'Yeni Başvuru';

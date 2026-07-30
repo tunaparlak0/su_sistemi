@@ -34,7 +34,7 @@ export default function Payment() {
     fetchInvoiceDetail();
   }, [id]);
 
-  // 📌 Kart Numarasını formatlama (Her 4 hanede bir boşluk)
+  // Kart Numarasını formatlama (Her 4 hanede bir boşluk)
   const handleCardNumberChange = (e) => {
     let value = e.target.value.replace(/\D/g, ''); // Sadece rakamları al
     value = value.substring(0, 16); // Maksimum 16 rakam
@@ -42,7 +42,7 @@ export default function Payment() {
     setCardData({ ...cardData, cardNumber: value });
   };
 
-  // 📌 SKT formatlama (Ay ve yıl arasına otomatik '/' koyma)
+  // SKT formatlama (Ay ve yıl arasına otomatik '/' koyma)
   const handleExpiryChange = (e) => {
     let value = e.target.value.replace(/\D/g, ''); // Sadece rakamları al
     value = value.substring(0, 4); // Maksimum 4 rakam (AAYY)
@@ -61,7 +61,7 @@ export default function Payment() {
       return;
     }
 
-    // 2. 📌 SKT (Son Kullanma Tarihi) Geçmiş Tarih Kontrolü
+    // 2. SKT (Son Kullanma Tarihi) Geçmiş Tarih Kontrolü
     const [monthStr, yearStr] = cardData.expiryDate.split('/');
     if (!monthStr || !yearStr || monthStr.length !== 2 || yearStr.length !== 2) {
       alert("Lütfen geçerli bir son kullanma tarihi giriniz (AA/YY).");
@@ -69,7 +69,7 @@ export default function Payment() {
     }
 
     const expMonth = parseInt(monthStr, 10);
-    const expYear = parseInt('20' + yearStr, 10); // YY kısmını 20YY yapıyoruz (Örn: 27 -> 2027)
+    const expYear = parseInt('20' + yearStr, 10);
 
     if (expMonth < 1 || expMonth > 12) {
       alert("Geçersiz ay girdiniz.");
@@ -77,7 +77,7 @@ export default function Payment() {
     }
 
     const now = new Date();
-    const currentMonth = now.getMonth() + 1; // JavaScript ayları 0'dan başlar (Ocak = 0)
+    const currentMonth = now.getMonth() + 1;
     const currentYear = now.getFullYear();
 
     // Eğer yıl geçmişse VEYA aynı yıldır ancak ay şimdiki aydan küçükse kartın süresi dolmuştur
@@ -101,7 +101,7 @@ export default function Payment() {
 
       alert("Ödeme başarıyla gerçekleştirildi! Teşekkür ederiz.");
       
-      // 📌 Fatura ödendikten sonra direkt fatura görüntüleme sayfasına yönlendiriyoruz
+      // Fatura ödendikten sonra direkt fatura görüntüleme sayfasına yönlendiriyoruz
       navigate('/fatura-goruntuleme');
     } catch (err) {
       alert(err.message);

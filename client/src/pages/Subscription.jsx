@@ -76,7 +76,7 @@ export default function Subscription() {
         idNo: formData.idNo || null,
         taxNo: formData.taxNo || null,
         subscriptionId: formData.subscriptionId,
-        meterType: formData.meterType // 📌 Seçilen sayaç tipi gönderiliyor
+        meterType: formData.meterType //Seçilen sayaç tipi gönderiliyor
       };
 
       const response = await postSubscription(payload);
@@ -139,7 +139,7 @@ export default function Subscription() {
                   required 
                 />
 
-                {/* 📌 Artık TC girilse bile kullanıcı dilerse Kurumsal seçebilir */}
+                {/* Artık TC girilse bile kullanıcı dilerse Kurumsal seçebilir */}
                 <div className="flex flex-col gap-1.5">
                   <label className="text-xs font-semibold text-slate-600">Tarife / Sayaç Tipi Seçin:</label>
                   <select 

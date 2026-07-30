@@ -18,7 +18,7 @@ export default function InvoiceCreate() {
       setSubscriptionId('');
       setUsedWater('');
     } catch (err) {
-      // 📌 F12 -> Console sekmesinde hatanın detayını görebilmek için:
+      //Console sekmesinde hatanın detayını görebilmek için:
       console.error("Frontend Fatura Hatası:", err);
       alert("Hata Detayı: " + err.message);
     }

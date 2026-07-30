@@ -12,7 +12,7 @@ export default function AdminUsers() {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        // 📌 Artık getUsersApi kullanarak güvenli şekilde token gönderiyoruz
+        // Artık getUsersApi kullanarak güvenli şekilde token gönderiyoruz
         const data = await getUsersApi();
         setUsers(data);
       } catch (err) {
@@ -92,7 +92,7 @@ export default function AdminUsers() {
                             </td>
                             <td className="py-4 px-6 font-mono text-xs text-slate-600">{u.idNo || u.taxNo || '-'}</td>
                             
-                            {/* 📌 Abonelik ID ve Durum Rozeti */}
+                            {/*Abonelik ID ve Durum Rozeti */}
                             <td className="py-4 px-6">
                               {u.subscription ? (
                                 <div className="flex flex-col gap-1">
