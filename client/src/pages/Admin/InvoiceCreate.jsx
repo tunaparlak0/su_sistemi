@@ -1,10 +1,9 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ShieldCheck, Home, Globe, Receipt } from 'lucide-react';
+import {Receipt } from 'lucide-react';
 import { createInvoiceApi } from '../../services/api'; // 📌 api.js'den import ediyoruz
-
+import Footer from '../../components/Footer';
+import AdminHeader from '../../components/AdminHeader';
 export default function InvoiceCreate() {
-  const navigate = useNavigate();
   const [subscriptionId, setSubscriptionId] = useState('');
   const [usedWater, setUsedWater] = useState('');
 
@@ -28,28 +27,7 @@ export default function InvoiceCreate() {
   return (
     <div className="min-h-screen bg-slate-100 flex flex-col justify-between">
       <div>
-        <header className="bg-white border-b border-slate-200 py-4 px-6 shadow-sm">
-          <div className="max-w-4xl mx-auto flex justify-between items-center">
-            <button 
-              onClick={() => navigate('/admin-panel')} 
-              className="flex items-center gap-2 text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors bg-slate-50 px-4 py-2 rounded-xl border border-slate-200"
-            >
-              <Home size={16} /> Admin Ana Sayfa
-            </button>
-
-            <div className="flex items-center gap-2 text-blue-900">
-              <ShieldCheck size={26} className="text-blue-600" />
-              <span className="font-bold tracking-tight text-lg">SASKİ Admin Paneli</span>
-            </div>
-
-            <button 
-              onClick={() => navigate('/')} 
-              className="flex items-center gap-2 text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors bg-slate-50 px-4 py-2 rounded-xl border border-slate-200"
-            >
-              <Globe size={16} /> Site Ana Sayfa
-            </button>
-          </div>
-        </header>
+        <AdminHeader/>
 
         <div className="max-w-4xl mx-auto px-6 py-12">
           <div className="flex items-center gap-3 mb-8">
@@ -96,12 +74,7 @@ export default function InvoiceCreate() {
         </div>
       </div>
 
-      <footer className="bg-white border-t border-slate-200 py-6 text-center text-slate-500 text-sm mt-auto">
-        <div className="max-w-4xl mx-auto px-6 flex flex-col sm:flex-row justify-between items-center gap-2">
-          <p>© 2026 Tuna Parlak | SASKİ Su Yönetim Sistemi</p>
-          <p className="font-semibold text-slate-700">Tüm hakları saklıdır.</p>
-        </div>
-      </footer>
+      <Footer/>
     </div>
   );
 }

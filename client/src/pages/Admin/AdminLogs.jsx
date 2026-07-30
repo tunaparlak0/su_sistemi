@@ -1,12 +1,11 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { History, ShieldCheck, Home, ArrowLeft, Clock, FileText } from 'lucide-react';
-
+import { History, Clock, FileText } from 'lucide-react';
+import Footer from '../../components/Footer';
+import AdminHeader from '../../components/AdminHeader';
 export default function AdminLogs() {
   const [activeTab, setActiveTab] = useState('worker'); // 'worker' veya 'subscription'
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
 
   // 📌 İngilizce aksiyonları Türkçe'ye çeviren yardımcı fonksiyon
   const translateAction = (action) => {
@@ -67,20 +66,7 @@ export default function AdminLogs() {
   return (
     <div className="min-h-screen bg-slate-100 flex flex-col justify-between">
       <div>
-        <header className="bg-white border-b border-slate-200 py-4 px-6 shadow-sm">
-          <div className="max-w-6xl mx-auto flex justify-between items-center">
-            <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors bg-slate-50 px-4 py-2 rounded-xl border border-slate-200">
-              <ArrowLeft size={16} /> Geri Dön
-            </button>
-            <div className="flex items-center gap-2 text-blue-900">
-              <ShieldCheck size={26} className="text-blue-600" />
-              <span className="font-bold tracking-tight text-lg">SASKİ Admin Paneli</span>
-            </div>
-            <button onClick={() => navigate('/admin-panel')} className="flex items-center gap-2 text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors bg-slate-50 px-4 py-2 rounded-xl border border-slate-200">
-              <Home size={16} /> Admin Panel
-            </button>
-          </div>
-        </header>
+        <AdminHeader/>
 
         <div className="max-w-6xl mx-auto px-6 py-10">
           <div className="flex items-center justify-between mb-8">
@@ -178,9 +164,7 @@ export default function AdminLogs() {
           )}
         </div>
       </div>
-      <footer className="bg-white border-t border-slate-200 py-6 text-center text-slate-500 text-sm mt-auto">
-        <p>© 2026 Tuna Parlak | SASKİ Su Yönetim Sistemi</p>
-      </footer>
+      <Footer/>
     </div>
   );
 }
