@@ -15,7 +15,7 @@ const applySubscription = async (req, reply) => {
       mail,
       telephone,
       idNo,
-      taxNo, // Servise eksiksiz gönderiliyor
+      taxNo,
       subscriptionId,
       meterType
     });
