@@ -10,7 +10,6 @@ const createWorker = async (data, performedByWorkerId) => {
 
   const workerId = generateWorkerId(name, surname);
   const generatedPassword = generateRandomPassword();
-  
   const newUser = await prisma.user.create({
     data: { name, surname, mail, telephone, idNo }
   });

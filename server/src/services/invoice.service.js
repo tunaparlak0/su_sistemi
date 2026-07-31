@@ -95,7 +95,6 @@ const createInvoice = async (data, workerId) => {
       }
     });
   }
-
   return newInvoice;
 };
 

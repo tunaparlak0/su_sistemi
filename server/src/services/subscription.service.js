@@ -194,5 +194,4 @@ const getLogsBySubscriptionId = async (subscriptionId) => {
     orderBy: { changedAt: 'desc' }
   });
 };
-module.exports = { 
-  applySubscription, getAllSubscriptions, approveSubscription, cancelSubscription,  updateContactInfo, getSubscriptionLogs, getLogsBySubscriptionId};
+module.exports = { applySubscription, getAllSubscriptions, approveSubscription, cancelSubscription,  updateContactInfo, getSubscriptionLogs, getLogsBySubscriptionId};
