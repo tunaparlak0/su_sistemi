@@ -2,7 +2,7 @@ const subscriptionService = require('../services/subscription.service');
 
 const applySubscription = async (req, reply) => {
   try {
-    // 📌 taxNo ve meterType alanları da destructuring ile eklendi
+    // taxNo ve meterType alanları da destructuring ile eklendi
     const { name, surname, mail, telephone, idNo, taxNo, subscriptionId, meterType } = req.body;
 
     if (!name || !surname || !subscriptionId) {
@@ -15,7 +15,7 @@ const applySubscription = async (req, reply) => {
       mail,
       telephone,
       idNo,
-      taxNo, // 📌 Servise eksiksiz gönderiliyor
+      taxNo, // Servise eksiksiz gönderiliyor
       subscriptionId,
       meterType
     });
