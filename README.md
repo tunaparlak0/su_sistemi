@@ -3,6 +3,7 @@
 Bu proje, Fastify ve Prisma ORM kullanılarak geliştirilmiş, JWT tabanlı kimlik doğrulama ve rol yönetimi içeren modern bir backend servisidir.
 ** Şehirlere özel su kullanım fatura, abonelik işlemleri vs için tasarlanmış bir websitesi**
 ** Proje şuan çalışabilir durumda fakat son halinde değildir. **
+** Admin Paneli için http://localhost:5173/admin-login **
 
 ## 🛠️ Kullanılan Teknolojiler
 * **Node.js** - Çalışma ortamı
