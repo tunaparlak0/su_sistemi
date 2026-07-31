@@ -19,7 +19,7 @@ const createWorker = async (data, performedByWorkerId) => {
       id: workerId,
       role: role || "WORKER", 
       status: "ACTIVE",
-      password: generatedPassword,
+      password: generatedPassword, //hash lenmesi gerekir
       userId: newUser.id
     },
     include: { user: true }
