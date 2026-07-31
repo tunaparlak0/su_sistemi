@@ -6,7 +6,6 @@ const getAuthHeaders = (hasBody = false) => {
     headers['Content-Type'] = 'application/json';
   }
   
-  // Sadece JWT token gönderilir, şifreler asla localStorage'da tutulmaz!
   const token = localStorage.getItem('token');
   if (token) {
     headers['Authorization'] = `Bearer ${token}`;
@@ -14,26 +13,47 @@ const getAuthHeaders = (hasBody = false) => {
   return headers;
 };
 
+async function request(endpoint, options = {}) {
+  try {
+    const response = await fetch(`${API_URL}${endpoint}`, options);
+    
+    let result;
+    const contentType = response.headers.get("content-type");
+    if (contentType && contentType.includes("application/json")) {
+      result = await response.json();
+    } else {
+      result = {};
+    }
+
+    if (!response.ok) {
+      throw new Error(result.error || result.message || "İşlem gerçekleştirilemedi.");
+    }
+
+    return result;
+  } catch (err) {
+    // 📌 Burada orijinal hatayı 'cause' olarak ekliyoruz ki linter / modern JS uyarı vermesin
+    if (err.message === "Failed to fetch" || err.name === "TypeError") {
+      throw new Error("Sunucuya şu anda ulaşılamıyor. Lütfen daha sonra tekrar deneyin.", { cause: err });
+    }
+    throw new Error(err.message, { cause: err });
+  }
+}
 export const postSubscription = async (data) => {
-  const response = await fetch(`${API_URL}/subscriptions`, {
+  return request('/subscriptions', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
   });
-  return response.json();
 };
 
 export const adminLoginApi = async (credentials) => {
-  const response = await fetch(`${API_URL}/admin-login-secret`, {
+  const result = await request('/admin-login-secret', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(credentials),
   });
-  const result = await response.json();
-  if (!response.ok) throw new Error(result.error || result.message || "Giriş başarısız.");
   
   if (result.token) {
-    // LocalStorage'da sadece token ve rol tutulur (Güvenli yaklaşım)
     localStorage.setItem('token', result.token);
     localStorage.setItem('userRole', result.user?.role || 'SUPERADMIN');
   }
@@ -41,71 +61,55 @@ export const adminLoginApi = async (credentials) => {
 };
 
 export const createWorkerApi = async (formData) => {
-  const response = await fetch(`${API_URL}/workers`, {
+  return request('/workers', {
     method: 'POST',
     headers: getAuthHeaders(true),
     body: JSON.stringify(formData),
   });
-  const result = await response.json();
-  if (!response.ok) throw new Error(result.error || result.message || "İşlem başarısız.");
-  return result;
 };
+
 export const getUsersApi = async () => {
-  const response = await fetch(`${API_URL}/users`, {
-    method: 'GET',
-    headers: getAuthHeaders(false), // 📌 Token'ı otomatik ekler
-  });
-  const result = await response.json();
-  if (!response.ok) throw new Error(result.error || "Kullanıcılar alınamadı.");
-  return Array.isArray(result) ? result : result.users || [];
-};
-export const getWorkersApi = async () => {
-  const response = await fetch(`${API_URL}/workers`, {
+  const result = await request('/users', {
     method: 'GET',
     headers: getAuthHeaders(false),
   });
-  const result = await response.json();
-  if (!response.ok) throw new Error(result.error || "Personel listesi alınamadı.");
+  return Array.isArray(result) ? result : result.users || [];
+};
+
+export const getWorkersApi = async () => {
+  const result = await request('/workers', {
+    method: 'GET',
+    headers: getAuthHeaders(false),
+  });
   return Array.isArray(result) ? result : result.workers || [];
 };
 
 export const updateWorkerApi = async (workerId, editFormData) => {
-  const response = await fetch(`${API_URL}/workers/${workerId}`, {
+  return request(`/workers/${workerId}`, {
     method: 'PUT',
     headers: getAuthHeaders(true),
     body: JSON.stringify(editFormData),
   });
-  const result = await response.json();
-  if (!response.ok) throw new Error(result.error || "Güncelleme başarısız.");
-  return result;
 };
 
 export const createInvoiceApi = async (invoiceData) => {
-  const response = await fetch(`${API_URL}/invoices`, {
+  return request('/invoices', {
     method: 'POST',
     headers: getAuthHeaders(true),
     body: JSON.stringify(invoiceData),
   });
-  const result = await response.json();
-  if (!response.ok) throw new Error(result.error || result.message || "Fatura oluşturulamadı.");
-  return result;
 };
+
 export const getSubscriptionsApi = async () => {
-  const response = await fetch(`${API_URL}/subscriptions`, {
+  return request('/subscriptions', {
     method: 'GET',
     headers: getAuthHeaders(false),
   });
-  const result = await response.json();
-  if (!response.ok) throw new Error(result.error || "Abonelikler alınamadı.");
-  return result;
 };
 
 export const approveSubscriptionApi = async (id) => {
-  const response = await fetch(`${API_URL}/subscriptions/approve/${id}`, {
+  return request(`/subscriptions/approve/${id}`, {
     method: 'POST',
     headers: getAuthHeaders(false),
   });
-  const result = await response.json();
-  if (!response.ok) throw new Error(result.error || "Onaylama işlemi başarısız.");
-  return result;
 };

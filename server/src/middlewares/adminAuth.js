@@ -15,7 +15,7 @@ module.exports = (requiredRoles = []) => {
         return reply.code(403).send({ error: "Bu işlem için yetkiniz yok!" });
       }
 
-      // 📌 KRİTİK: Rol uygunsa middleware'in başarıyla tamamlandığını belirtmek için return ekliyoruz!
+      //KRİTİK: Rol uygunsa middleware'in başarıyla tamamlandığını belirtmek için return ekliyoruz!
       return;
 
     } catch (err) {
