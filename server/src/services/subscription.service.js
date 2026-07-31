@@ -195,11 +195,4 @@ const getLogsBySubscriptionId = async (subscriptionId) => {
   });
 };
 module.exports = { 
-  applySubscription, 
-  getAllSubscriptions, 
-  approveSubscription, 
-  cancelSubscription, 
-  updateContactInfo, 
-  getSubscriptionLogs,    
-  getLogsBySubscriptionId
-};
+  applySubscription, getAllSubscriptions, approveSubscription, cancelSubscription,  updateContactInfo, getSubscriptionLogs, getLogsBySubscriptionId};
