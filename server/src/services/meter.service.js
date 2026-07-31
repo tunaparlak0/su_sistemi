@@ -27,7 +27,7 @@ const createMeter = async (data, workerId) => {
     }
   });
 
-  // 📌 WorkerLog: Yeni Sayaç ve Abonelik Oluşturma Logu
+  //WorkerLog: Yeni Sayaç ve Abonelik Oluşturma Logu
   if (workerId) {
     await prisma.workerLog.create({
       data: {

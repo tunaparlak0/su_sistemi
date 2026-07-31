@@ -13,7 +13,7 @@ const adminLogin = async (id, password, fastify) => {
     throw new Error("Hesap aktif değil!");
   }
 
-  // 📌 Token içine id ve role ekliyoruz
+  // Token içine id ve role ekliyoruz
   const jwtToken = fastify.jwt.sign({ 
     id: worker.id, 
     role: worker.role 

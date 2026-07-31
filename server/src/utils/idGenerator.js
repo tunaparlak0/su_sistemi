@@ -7,15 +7,15 @@ const generateSubscriptionId = (number) => {
     return String(number);
 };
 const generateWorkerId = (name, surname) => {
-  // 📌 Türkçe karakterleri İngilizce karşılıklarına dönüştüren yardımcı fonksiyon
+  //Türkçe karakterleri İngilizce karşılıklarına dönüştüren yardımcı fonksiyon
   const removeTurkishChars = (str) => {
     if (!str) return '';
     return str
       .trim()
       .normalize("NFD") // Harfler ile aksanlarını ayırır (Örn: ş -> s + çengel)
       .replace(/[\u0300-\u036f]/g, "") // Aksan işaretlerini siler
-      .replace(/ı/g, 'i') // Küçük ı
-      .replace(/İ/g, 'I'); // Büyük İ
+      .replace(/ı/g, 'i') 
+      .replace(/İ/g, 'I'); 
   };
 
   const cleanName = removeTurkishChars(name);

@@ -41,7 +41,7 @@ const applySubscription = async (data) => {
     include: { owners: true, meter: true }
   });
 
-  // 📌 1. SubscriptionLog: Yeni Başvuru / Başlangıç Logu
+  // 1. SubscriptionLog: Yeni Başvuru / Başlangıç Logu
   await prisma.subscriptionLog.create({
     data: {
       meterNo: existingSub.meterId || '',
@@ -91,7 +91,7 @@ const approveSubscription = async (subscriptionId, performedByWorkerId) => {
     });
   }
 
-  // 📌 2. SubscriptionLog: Abonelik Onay / Aktifleşme Logu
+  // 2. SubscriptionLog: Abonelik Onay / Aktifleşme Logu
   const primaryOwner = existingSub.owners[0];
   await prisma.subscriptionLog.create({
     data: {
@@ -121,13 +121,13 @@ const cancelSubscription = async (subscriptionId, idNo) => {
     throw new Error("Girilen T.C. Kimlik / Vergi Numarası bu aboneliğin sahibi ile eşleşmiyor!");
   }
 
-  // 📌 1. Bağlı olan kullanıcının (User) subscriptionId alanını null yapıyoruz
+  // 1. Bağlı olan kullanıcının (User) subscriptionId alanını null yapıyoruz
   await prisma.user.updateMany({
     where: { subscriptionId: subscriptionId },
     data: { subscriptionId: null }
   });
 
-  // 📌 2. Aboneliğin durumunu CANCELLED yapıp, tipini (type) null yapıyoruz
+  //2. Aboneliğin durumunu CANCELLED yapıp, tipini (type) null yapıyoruz
   const cancelledSub = await prisma.subscription.update({
     where: { id: subscriptionId },
     data: { 
@@ -136,7 +136,7 @@ const cancelSubscription = async (subscriptionId, idNo) => {
     }
   });
 
-  // 📌 3. SubscriptionLog: İptal Edildi Logu
+  //3. SubscriptionLog: İptal Edildi Logu
   await prisma.subscriptionLog.create({
     data: {
       meterNo: sub.meterId || '',

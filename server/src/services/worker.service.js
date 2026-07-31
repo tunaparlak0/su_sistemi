@@ -26,7 +26,7 @@ const createWorker = async (data, performedByWorkerId) => {
     include: { user: true }
   });
 
-  // 📌 WorkerLog Kaydı At
+  // WorkerLog Kaydı At
   await prisma.workerLog.create({
     data: {
       action: "CREATE_WORKER",
@@ -81,7 +81,7 @@ const updateWorker = async (targetWorkerId, data, performedByWorkerId) => {
     include: { user: true }
   });
 
-  // 📌 WorkerLog Kaydı At
+  // WorkerLog Kaydı At
   await prisma.workerLog.create({
     data: {
       action: "UPDATE_WORKER",
@@ -104,7 +104,7 @@ const getWorkerLogs = async () => {
         }
       }
     },
-    orderBy: { createdAt: 'desc' } // 📌 changedAt yerine createdAt olmalı
+    orderBy: { createdAt: 'desc' }
   });
 };
 module.exports = { createWorker, getAllWorkers, updateWorker, getWorkerLogs };
