@@ -7,7 +7,6 @@ const createMeter = async (data, workerId) => {
   const meterCount = await prisma.meter.count();
   const nextNumber = meterCount + 1;
   const newMeterNo = formatMeterNo(nextNumber); 
-
   const subCount = await prisma.subscription.count();
   const nextSubNumber = 1000001 + subCount;
   const newSubId = generateSubscriptionId(nextSubNumber); 
