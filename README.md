@@ -1,6 +1,8 @@
 # 🚀 Su/Fatura Yönetim Sistemi Backend API
 
 Bu proje, Fastify ve Prisma ORM kullanılarak geliştirilmiş, JWT tabanlı kimlik doğrulama ve rol yönetimi içeren modern bir backend servisidir.
+** Şehirlere özel su kullanım fatura, abonelik işlemleri vs için tasarlanmış bir websitesi**
+** Proje şuan çalışabilir durumda fakat son halinde değildir. **
 
 ## 🛠️ Kullanılan Teknolojiler
 * **Node.js** - Çalışma ortamı
@@ -16,4 +18,4 @@ Projeyi kendi bilgisayarınızda çalıştırmak için aşağıdaki adımları t
    ```bash
    git clone https://github.com/tunaparlak0/su_sistemi
 
-   ** Proje şuan çalışabilir durumda fakat son halinde değildir. **
+   
