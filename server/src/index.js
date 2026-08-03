@@ -2,7 +2,6 @@ const fastify = require('fastify')({ logger: true });
 const prisma = require('./config/prisma');
 require('dotenv').config();
 
-// 1. JWT Eklentisini buraya ekliyoruz
 fastify.register(require('@fastify/jwt'), {
   secret: process.env.JWT_SECRET
 });

@@ -1,13 +1,15 @@
 import { useState, useEffect } from 'react';
-import { History, Clock, FileText } from 'lucide-react';
+import { History, Clock, FileText, Search } from 'lucide-react';
 import Footer from '../../components/Footer';
 import AdminHeader from '../../components/AdminHeader';
+
 export default function AdminLogs() {
   const [activeTab, setActiveTab] = useState('worker'); // 'worker' veya 'subscription'
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState(''); // 🔍 Arama kelimesi için state
 
-  //İngilizce aksiyonları Türkçe'ye çeviren yardımcı fonksiyon
+  // İngilizce aksiyonları Türkçe'ye çeviren yardımcı fonksiyon
   const translateAction = (action) => {
     switch (action) {
       case 'CREATE_WORKER': return 'Personel Oluşturuldu';
@@ -63,13 +65,34 @@ export default function AdminLogs() {
     };
   }, [activeTab]);
 
+  // 🔍 Arama Filtreleme Mantığı
+  const filteredLogs = logs.filter((log) => {
+    const term = searchTerm.toLowerCase();
+    
+    // İşlem türünün Türkçesini veya İngilizcesini aramaya dahil et
+    const translated = translateAction(log.action).toLowerCase();
+    const actionMatch = log.action.toLowerCase().includes(term) || translated.includes(term);
+    
+    // Açıklama veya ID eşleşmesi
+    const description = activeTab === 'worker' 
+      ? (log.description || '').toLowerCase()
+      : `${log.subscriptionId || ''} ${log.meterNo || ''}`.toLowerCase();
+      
+    // Personel adı eşleşmesi (Worker logları için)
+    const workerName = log.worker?.user 
+      ? `${log.worker.user.name} ${log.worker.user.surname}`.toLowerCase() 
+      : (log.workerId || '').toLowerCase();
+
+    return actionMatch || description.includes(term) || workerName.includes(term);
+  });
+
   return (
     <div className="min-h-screen bg-slate-100 flex flex-col justify-between">
       <div>
         <AdminHeader/>
 
         <div className="max-w-6xl mx-auto px-6 py-10">
-          <div className="flex items-center justify-between mb-8">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-8">
             <div className="flex items-center gap-3">
               <div className="p-3 bg-blue-50 rounded-xl border border-blue-100">
                 <History className="text-blue-600" size={28} />
@@ -79,15 +102,30 @@ export default function AdminLogs() {
                 <p className="text-sm text-slate-500">Personel ve abonelik hareketlerini inceleyin</p>
               </div>
             </div>
-            <div className="text-sm font-medium text-slate-600 bg-white px-4 py-2 rounded-xl border border-slate-200 shadow-sm">
-              Toplam Kayıt: <span className="font-bold text-blue-600">{logs.length}</span>
+            
+            <div className="flex items-center gap-4 w-full md:w-auto">
+              {/* 🔍 Arama Inputu */}
+              <div className="relative flex-1 md:w-72">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                <input
+                  type="text"
+                  placeholder="İşlem türü veya personel ara..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
+                />
+              </div>
+
+              <div className="text-sm font-medium text-slate-600 bg-white px-4 py-2 rounded-xl border border-slate-200 shadow-sm whitespace-nowrap">
+                Kayıt: <span className="font-bold text-blue-600">{filteredLogs.length}</span>
+              </div>
             </div>
           </div>
 
           {/* Sekme Butonları */}
           <div className="flex gap-4 mb-6">
             <button
-              onClick={() => setActiveTab('worker')}
+              onClick={() => { setActiveTab('worker'); setSearchTerm(''); }}
               className={`flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm transition-all border ${
                 activeTab === 'worker'
                   ? 'bg-blue-600 text-white border-blue-600 shadow-sm'
@@ -97,7 +135,7 @@ export default function AdminLogs() {
               <History size={18} /> Personel Logları
             </button>
             <button
-              onClick={() => setActiveTab('subscription')}
+              onClick={() => { setActiveTab('subscription'); setSearchTerm(''); }}
               className={`flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm transition-all border ${
                 activeTab === 'subscription'
                   ? 'bg-blue-600 text-white border-blue-600 shadow-sm'
@@ -125,13 +163,12 @@ export default function AdminLogs() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 text-sm">
-                    {logs.length === 0 ? (
+                    {filteredLogs.length === 0 ? (
                       <tr>
-                        <td colSpan="4" className="text-center py-12 text-slate-400">Bu kategoride henüz kayıt bulunmuyor.</td>
+                        <td colSpan="4" className="text-center py-12 text-slate-400">Aradığınız kriterlere uygun kayıt bulunamadı.</td>
                       </tr>
                     ) : (
-                      logs.map((log) => {
-                        // Abonelik loglarında description olmadığı için dinamik açıklama üretelim
+                      filteredLogs.map((log) => {
                         const descriptionText = activeTab === 'worker' 
                           ? (log.description || '-')
                           : `${log.subscriptionId || 'Bilinmeyen'} numaralı abonelik ve ${log.meterNo || '-'} numaralı sayaç üzerinde işlem gerçekleştirildi.`;
